@@ -1,0 +1,45 @@
+src/main/java/com/example/demo
+├── src/main/java/com/example/demo/config
+│   ├── src/main/java/com/example/demo/config/ApplicationConfig.java
+│   ├── src/main/java/com/example/demo/config/JwtAuthenticationFilter.java
+│   └── src/main/java/com/example/demo/config/SecurityConfig.java
+├── src/main/java/com/example/demo/controller
+│   ├── src/main/java/com/example/demo/controller/AuthController.java
+│   ├── src/main/java/com/example/demo/controller/UserController.java
+│   ├── src/main/java/com/example/demo/controller/WatchlistController.java
+│   └── src/main/java/com/example/demo/controller/WatchlistGroupController.java
+├── src/main/java/com/example/demo/DemoApplication.java
+├── src/main/java/com/example/demo/dtos
+│   ├── src/main/java/com/example/demo/dtos/LoginResponse.java
+│   ├── src/main/java/com/example/demo/dtos/LoginUserDto.java
+│   └── src/main/java/com/example/demo/dtos/RegisterUserDto.java
+├── src/main/java/com/example/demo/exception
+│   ├── src/main/java/com/example/demo/exception/GlobalExceptionHandler.java
+│   └── src/main/java/com/example/demo/exception/notFound
+│       ├── src/main/java/com/example/demo/exception/notFound/UserNotFoundException.java
+│       └── src/main/java/com/example/demo/exception/notFound/WatchlistNotFoundException.java
+├── src/main/java/com/example/demo/model
+│   ├── src/main/java/com/example/demo/model/OwnedStock.java
+│   ├── src/main/java/com/example/demo/model/Stock.java
+│   ├── src/main/java/com/example/demo/model/User.java
+│   ├── src/main/java/com/example/demo/model/WatchlistGroup.java
+│   └── src/main/java/com/example/demo/model/Watchlist.java
+├── src/main/java/com/example/demo/repository
+│   ├── src/main/java/com/example/demo/repository/UserRepository.java
+│   ├── src/main/java/com/example/demo/repository/WatchlistGroupRepository.java
+│   └── src/main/java/com/example/demo/repository/WatchlistRepository.java
+├── src/main/java/com/example/demo/service
+│   ├── src/main/java/com/example/demo/service/AuthService.java
+│   ├── src/main/java/com/example/demo/service/implementation
+│   │   ├── src/main/java/com/example/demo/service/implementation/AuthServiceImpl.java
+│   │   ├── src/main/java/com/example/demo/service/implementation/UserServiceImpl.java
+│   │   ├── src/main/java/com/example/demo/service/implementation/WatchlistGroupServiceImpl.java
+│   │   └── src/main/java/com/example/demo/service/implementation/WatchlistServiceImpl.java
+│   ├── src/main/java/com/example/demo/service/UserService.java
+│   ├── src/main/java/com/example/demo/service/WatchlistGroupService.java
+│   └── src/main/java/com/example/demo/service/WatchlistService.java
+└── src/main/java/com/example/demo/util
+    ├── src/main/java/com/example/demo/util/JwtService.java
+    └── src/main/java/com/example/demo/util/PasswordService.java
+
+10 directories, 32 files

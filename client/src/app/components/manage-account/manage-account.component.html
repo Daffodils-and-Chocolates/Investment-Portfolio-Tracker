@@ -1,0 +1,90 @@
+<div
+  class="container mt-5 d-flex justify-content-center align-items-start"
+  style="min-height: 85vh"
+>
+  <div class="row w-100">
+    <!-- Left Column: Image -->
+    <div
+      class="col-md-6 mb-4 mb-md-0 d-flex justify-content-center align-items-center"
+    >
+      <img
+        src="assets/images/editUserProfile.png"
+        alt="Manage Account"
+        class="img-fluid rounded shadow-sm"
+        style="max-height: 80vh; object-fit: cover"
+      />
+    </div>
+
+    <!-- Right Column: Form -->
+    <div class="col-md-6 d-flex justify-content-center align-items-center">
+      <div class="card shadow-sm w-100">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Manage Account</h4>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="manageAccountForm" (ngSubmit)="onSubmit()">
+            <!-- Name -->
+            <div class="mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input
+                id="name"
+                type="text"
+                class="form-control"
+                formControlName="name"
+                placeholder="Enter your name"
+              />
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                formControlName="email"
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <!-- Old Password -->
+            <div class="mb-3">
+              <label for="oldPassword" class="form-label">Old Password</label>
+              <input
+                id="oldPassword"
+                type="password"
+                class="form-control"
+                formControlName="oldPassword"
+                placeholder="Enter your current password"
+              />
+              <div *ngIf="passwordsMustMatch" class="form-text text-danger">
+                Please fill both password fields.
+              </div>
+            </div>
+
+            <!-- New Password -->
+            <div class="mb-3">
+              <label for="newPassword" class="form-label">New Password</label>
+              <input
+                id="newPassword"
+                type="password"
+                class="form-control"
+                formControlName="newPassword"
+                placeholder="Enter a new password"
+              />
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              class="btn btn-primary w-100"
+              [disabled]="passwordsMustMatch || manageAccountForm.invalid"
+            >
+              Update
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

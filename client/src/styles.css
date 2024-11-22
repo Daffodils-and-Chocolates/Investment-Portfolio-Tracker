@@ -1,0 +1,36 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+  --accent-color-purple: #ae7dd1;
+  --accent-color-blue:      #8c9ee4;
+  --accent-color-green: #4caf50;
+}
+.accent-purple {
+  color: var(--accent-color-purple);
+}
+
+.accent-blue {
+  color: var(--accent-color-blue);
+}
+
+.accent-green {
+  color: var(--accent-color-green);
+}
+
+
+.btn-primary {
+  background-color: var(--accent-color-purple) !important;
+  border-color: var(--accent-color-purple) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-color-blue) !important;
+  border-color: var(--accent-color-blue) !important;
+}
+
+.bg-primary{
+  background-color: var(--accent-color-blue) !important;
+}
+
+      /* .btn-primary:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5) !important;
+      } */

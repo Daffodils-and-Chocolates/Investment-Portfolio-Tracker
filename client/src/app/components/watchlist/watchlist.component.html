@@ -1,0 +1,42 @@
+<div class="container mt-4">
+  <h2 class="text-center">Watchlist</h2>
+
+  <!-- Check if there's stock data -->
+  <div *ngIf="stockData.length > 0; else noData">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Stock Symbol</th>
+          <th>Price</th>
+          <th>Change</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let stock of stockData; let i = index"
+          [attr.data-index]="i"
+        >
+          <td>{{ i + 1 }}</td>
+          <td>{{ stock.symbol }}</td>
+          <td>{{ stock.price | currency }}</td>
+          <td
+            [ngClass]="{
+              'text-success': stock.change >= 0,
+              'text-danger': stock.change < 0
+            }"
+          >
+            {{ stock.change | number : "1.2-2" }}%
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- No data message -->
+  <ng-template #noData>
+    <p class="text-center text-muted">
+      No stock data available. Please wait...
+    </p>
+  </ng-template>
+</div>
