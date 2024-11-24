@@ -6,12 +6,10 @@ import java.util.List;
 
 public interface WatchlistGroupService {
     WatchlistGroup createWatchlistGroup(WatchlistGroup watchlistGroup);
-    WatchlistGroup getWatchlistGroupById(Long id);
+    WatchlistGroup getWatchlistGroupByName(String groupName);
     List<WatchlistGroup> getAllWatchlistGroups();
-    WatchlistGroup updateWatchlistGroup(Long id, WatchlistGroup watchlistGroup);
-    void deleteWatchlistGroup(Long id);
-
-    //Watchlist stocks
-    List<Watchlist> addStocksToGroup(Long groupId, List<Long> stockIds);
-    List<Watchlist> removeStocksFromGroup(Long groupId, List<Long> stockIds);
+    WatchlistGroup updateWatchlistGroup(String groupName, WatchlistGroup watchlistGroupDetails);
+    void deleteWatchlistGroup(String groupName);
+    List<Watchlist> addStocksToGroup(String groupName, List<Long> stockIds);
+    List<Watchlist> removeStocksFromGroup(String groupName, List<Long> stockIds);
 }

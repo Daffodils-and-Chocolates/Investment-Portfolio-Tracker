@@ -1,7 +1,5 @@
 package com.example.demo.exception;
 
-import com.example.demo.exception.notFound.UserNotFoundException;
-import com.example.demo.exception.notFound.WatchlistNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
@@ -13,53 +11,96 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.ProblemDetail;
 
+import java.sql.SQLException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    private ProblemDetail createProblemDetail(HttpStatus status, String detail, String description) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
+        problemDetail.setProperty("description", description);
+        problemDetail.setProperty("timestamp", java.time.LocalDateTime.now().toString());
+        return problemDetail;
     }
 
-    @ExceptionHandler(WatchlistNotFoundException.class)  // handle WatchlistNotFoundException
-    public ResponseEntity<String> handleResourceNotFoundException(WatchlistNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ProblemDetail> handleResourceNotFoundException(EntityNotFoundException ex) {
+        ProblemDetail errorDetail = createProblemDetail(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage(),
+                "The requested resource could not be found"
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetail);
     }
 
-    // Security Exception Handlers
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<ProblemDetail> handleSQLException(SQLException ex) {
+        ProblemDetail errorDetail = createProblemDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "A database error occurred",
+                "An unexpected database error prevented the operation from completing"
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetail);
+    }
+
+    //Security or login exceptions
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ProblemDetail> handleBadCredentialsException(BadCredentialsException ex) {
-        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.valueOf(401), ex.getMessage());
-        errorDetail.setProperty("description", "The username or password is incorrect");
-        return new ResponseEntity<>(errorDetail, HttpStatus.UNAUTHORIZED);
+        ProblemDetail errorDetail = createProblemDetail(
+                HttpStatus.UNAUTHORIZED,
+                ex.getMessage(),
+                "The username or password is incorrect"
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetail);
     }
 
     @ExceptionHandler(AccountStatusException.class)
     public ResponseEntity<ProblemDetail> handleAccountStatusException(AccountStatusException ex) {
-        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.valueOf(403), ex.getMessage());
-        errorDetail.setProperty("description", "The account is locked");
-        return new ResponseEntity<>(errorDetail, HttpStatus.FORBIDDEN);
+        ProblemDetail errorDetail = createProblemDetail(
+                HttpStatus.FORBIDDEN,
+                ex.getMessage(),
+                "The account is locked or inactive"
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetail);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ProblemDetail> handleAccessDeniedException(AccessDeniedException ex) {
-        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.valueOf(403), ex.getMessage());
-        errorDetail.setProperty("description", "You are not authorized to access this resource");
-        return new ResponseEntity<>(errorDetail, HttpStatus.FORBIDDEN);
+        ProblemDetail errorDetail = createProblemDetail(
+                HttpStatus.FORBIDDEN,
+                ex.getMessage(),
+                "You are not authorized to access this resource"
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetail);
     }
 
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<ProblemDetail> handleSignatureException(SignatureException ex) {
-        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.valueOf(403), ex.getMessage());
-        errorDetail.setProperty("description", "The JWT signature is invalid");
-        return new ResponseEntity<>(errorDetail, HttpStatus.FORBIDDEN);
+        ProblemDetail errorDetail = createProblemDetail(
+                HttpStatus.FORBIDDEN,
+                ex.getMessage(),
+                "The JWT signature is invalid"
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetail);
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<ProblemDetail> handleExpiredJwtException(ExpiredJwtException ex) {
-        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.valueOf(403), ex.getMessage());
-        errorDetail.setProperty("description", "The JWT token has expired");
-        return new ResponseEntity<>(errorDetail, HttpStatus.FORBIDDEN);
+        ProblemDetail errorDetail = createProblemDetail(
+                HttpStatus.FORBIDDEN,
+                ex.getMessage(),
+                "The JWT token has expired"
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetail);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ProblemDetail> handleGenericException(Exception ex) {
+        ProblemDetail errorDetail = createProblemDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Something went wrong!",
+                "An unexpected error occurred. Please try again later."
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetail);
+    }
 }

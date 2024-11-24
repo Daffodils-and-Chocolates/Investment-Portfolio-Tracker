@@ -1,4 +1,4 @@
-package com.example.demo.models.dtos;
+package com.example.demo.models.dtos.authDto;
 
 import com.example.demo.models.entity.User;
 import lombok.AllArgsConstructor;

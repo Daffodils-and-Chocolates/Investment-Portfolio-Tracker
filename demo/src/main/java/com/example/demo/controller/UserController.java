@@ -1,9 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.models.dtos.GetUserDto;
-import com.example.demo.models.dtos.UpdateUserRequestDto;
+import com.example.demo.models.dtos.userDto.GetUserDto;
+import com.example.demo.models.dtos.userDto.UpdateUserRequestDto;
 import com.example.demo.models.entity.User;
-import com.example.demo.models.entity.Watchlist;
 import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,16 +53,6 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @Operation(summary="get the logged in User's watchlist", description="include the token")
-    @GetMapping("/watchlist")
-    public ResponseEntity<Watchlist> getUserWatchlist(@AuthenticationPrincipal User user) {
-        if (user.getWatchlist() != null) {
-            return ResponseEntity.ok(user.getWatchlist());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
     @Operation(summary="update User with token", description="includes any or all : name, email, password, must include old Original password if you want to update it to a new Password")
     @PutMapping("/me")
     public ResponseEntity<GetUserDto> updateUserByToken(@AuthenticationPrincipal User user, @RequestBody UpdateUserRequestDto userUpdates) {
@@ -80,10 +69,10 @@ public class UserController {
         return ResponseEntity.ok(authenticatedCurrentUser);
     }
 //      testing principal works
-//    @GetMapping("/test/me")
-//    public ResponseEntity<String> authUser(Principal principal) {
-//        return ResponseEntity.ok(principal.getName());
-//    }
+    @GetMapping("/test/me")
+    public ResponseEntity<User> authUser(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(user);
+    }
 
     @Operation(summary="delete User", description="")
     @DeleteMapping("/{id}")

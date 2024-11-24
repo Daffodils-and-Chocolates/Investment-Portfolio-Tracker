@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.models.dtos.GetUserDto;
-import com.example.demo.models.dtos.UpdateUserRequestDto;
+import com.example.demo.models.dtos.userDto.GetUserDto;
+import com.example.demo.models.dtos.userDto.UpdateUserRequestDto;
 import com.example.demo.models.entity.User;
 import java.util.List;
 

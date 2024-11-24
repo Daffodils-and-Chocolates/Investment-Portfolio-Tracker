@@ -1,7 +1,8 @@
-package com.example.demo.service.implementation;
+package com.example.demo.implementation;
 
-import com.example.demo.models.dtos.LoginUserDto;
-import com.example.demo.models.dtos.RegisterUserDto;
+import com.example.demo.models.dtos.authDto.LoginUserDto;
+import com.example.demo.models.dtos.authDto.SignUpUserDto;
+import com.example.demo.models.dtos.authDto.SignUpResponseDto;
 import com.example.demo.models.entity.User;
 import com.example.demo.service.AuthService;
 import com.example.demo.service.UserService;
@@ -47,13 +48,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public User signup(RegisterUserDto registerUserDto) {
-        // Convert RegisterUserDto to User entity and save it using UserService
+    public SignUpResponseDto signup(SignUpUserDto signUpUserDto) {
         User newUser = new User();
-        newUser.setEmail(registerUserDto.getEmail());
-        newUser.setPassword(registerUserDto.getPassword());  // Assuming password encryption handled in UserService
-        newUser.setName(registerUserDto.getName());  // Setting name instead of fullName
-        return userService.createUser(newUser);
+        newUser.setEmail(signUpUserDto.getEmail());
+        newUser.setPassword(signUpUserDto.getPassword());  // Assuming password encryption handled in UserService
+        newUser.setName(signUpUserDto.getName());
+        userService.createUser(newUser);
+        return new SignUpResponseDto(jwtService.generateToken(newUser), newUser,null);
     }
 
 }

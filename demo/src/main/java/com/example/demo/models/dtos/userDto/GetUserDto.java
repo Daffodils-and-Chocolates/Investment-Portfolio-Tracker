@@ -1,4 +1,4 @@
-package com.example.demo.models.dtos;
+package com.example.demo.models.dtos.userDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

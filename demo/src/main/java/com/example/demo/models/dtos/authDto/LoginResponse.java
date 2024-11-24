@@ -1,8 +1,6 @@
-package com.example.demo.models.dtos;
+package com.example.demo.models.dtos.authDto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 public class LoginResponse {

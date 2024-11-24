@@ -1,8 +1,8 @@
-package com.example.demo.service.implementation;
+package com.example.demo.implementation;
 
-import com.example.demo.exception.notFound.UserNotFoundException;
-import com.example.demo.models.dtos.GetUserDto;
-import com.example.demo.models.dtos.UpdateUserRequestDto;
+import com.example.demo.exception.EntityNotFoundException;
+import com.example.demo.models.dtos.userDto.GetUserDto;
+import com.example.demo.models.dtos.userDto.UpdateUserRequestDto;
 import com.example.demo.models.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+                .orElseThrow(() -> new EntityNotFoundException("User",id));
     }
 
     @Override
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
             }
             existingUser.setUpdatedAt(LocalDateTime.now());
             return userRepository.save(existingUser);
-        }).orElseThrow(() -> new UserNotFoundException(id));
+        }).orElseThrow(() -> new EntityNotFoundException("User",id));
     }
 
     public GetUserDto updateUserByToken(User authenticatedUser, UpdateUserRequestDto userUpdates) {

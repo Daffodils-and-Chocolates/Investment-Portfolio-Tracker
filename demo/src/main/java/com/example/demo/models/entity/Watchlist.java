@@ -1,8 +1,8 @@
 package com.example.demo.models.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,32 +17,27 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "watchlist")
+@Table(name = "watchlist", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "stock_id", "group_id"})
+})
 public class Watchlist {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "watchlist_id")
-    private Long id;
+    @Column(name = "watchlist_id", updatable = false)
+    private Long watchlistId;
 
-    @NotNull
-    @Column(name = "symbol", nullable = false)
-    private String symbol;
+//    @JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "display_symbol")
-    private String displaySymbol;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "stock_id", nullable = false)
+    private Stock stock;
 
-    @Column(name = "description")
-    private String description;
-
-    // Bidirectional relationship: One-to-one with User
-    @JsonBackReference
-    @OneToOne
-    @JoinColumn(name = "user_id", unique = true)
-    private User user;  // Link Watchlist to User
-
-    @OneToMany(mappedBy = "watchlist", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<WatchlistGroup> groups = new ArrayList<>();
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "group_name")
+    private WatchlistGroup group;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -51,12 +46,4 @@ public class Watchlist {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public void setUser(User user) {
-        this.user = user;
-        if (user != null && user.getWatchlist() != this) {
-            user.setWatchlist(this);
-        }
-    }
-
 }

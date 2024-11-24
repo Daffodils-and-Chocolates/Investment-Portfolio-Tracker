@@ -24,13 +24,13 @@ public class WatchlistGroupController {
     @Operation(summary = "Create a new watchlist group", description = "Adds a new watchlist group to the database.")
     public ResponseEntity<WatchlistGroup> createWatchlistGroup(@RequestBody WatchlistGroup watchlistGroup) {
         WatchlistGroup createdGroup = watchlistGroupService.createWatchlistGroup(watchlistGroup);
-        return new ResponseEntity<>(createdGroup, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdGroup);
     }
 
-    @GetMapping("/{id}")
-                @Operation(summary = "Get a watchlist group by ID", description = "Fetches a watchlist group by its unique ID.")
-    public ResponseEntity<WatchlistGroup> getWatchlistGroupById(@PathVariable Long id) {
-        WatchlistGroup watchlistGroup = watchlistGroupService.getWatchlistGroupById(id);
+    @GetMapping("/{groupName}")
+    @Operation(summary = "Get a watchlist group by name", description = "Fetches a watchlist group by its unique name.")
+    public ResponseEntity<WatchlistGroup> getWatchlistGroupByName(@PathVariable String groupName) {
+        WatchlistGroup watchlistGroup = watchlistGroupService.getWatchlistGroupByName(groupName);
         return ResponseEntity.ok(watchlistGroup);
     }
 
@@ -41,42 +41,37 @@ public class WatchlistGroupController {
         return ResponseEntity.ok(watchlistGroups);
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update a watchlist group by ID", description = "Updates the details of an existing watchlist group.")
+    @PutMapping("/{groupName}")
+    @Operation(summary = "Update a watchlist group by name", description = "Updates the details of an existing watchlist group.")
     public ResponseEntity<WatchlistGroup> updateWatchlistGroup(
-            @PathVariable Long id, @RequestBody WatchlistGroup watchlistGroup) {
-        WatchlistGroup updatedGroup = watchlistGroupService.updateWatchlistGroup(id, watchlistGroup);
+            @PathVariable String groupName,
+            @RequestBody WatchlistGroup watchlistGroupDetails) {
+        WatchlistGroup updatedGroup = watchlistGroupService.updateWatchlistGroup(groupName, watchlistGroupDetails);
         return ResponseEntity.ok(updatedGroup);
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a stock from watchlist group by ID", description = "Removes a watchlist group from the database by its unique ID.")
-    public ResponseEntity<Void> deleteStockWatchlistGroup(@PathVariable Long id) {
-        watchlistGroupService.deleteWatchlistGroup(id);
+    @DeleteMapping("/{groupName}")
+    @Operation(summary = "Delete a watchlist group by name", description = "Removes a watchlist group from the database by its unique name.")
+    public ResponseEntity<Void> deleteWatchlistGroup(@PathVariable String groupName) {
+        watchlistGroupService.deleteWatchlistGroup(groupName);
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(
-            summary = "Add multiple stocks to a specific group",
-            description = "Assigns multiple stocks to a given watchlist group by providing the group ID and one or more stock IDs."
-    )
-    @PostMapping("/group/{groupId}/stocks/{stockIds}")
-    public List<Watchlist> addStocksToGroup(
-            @PathVariable Long groupId,
-            @PathVariable List<Long> stockIds
-    ) {
-        return watchlistGroupService.addStocksToGroup(groupId, stockIds);
+    @PostMapping("/{groupName}/stocks")
+    @Operation(summary = "Add stocks to a watchlist group", description = "Associates stocks with an existing watchlist group by its name.")
+    public ResponseEntity<List<Watchlist>> addStocksToGroup(
+            @PathVariable String groupName,
+            @RequestBody List<Long> stockIds) {
+        List<Watchlist> addedStocks = watchlistGroupService.addStocksToGroup(groupName, stockIds);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addedStocks);
     }
 
-    @Operation(
-            summary = "Remove a stock from a specific group",
-            description = "Detaches a stock from a given watchlist group if it is currently assigned to that group."
-    )
-    @DeleteMapping("/group/{groupId}/stock/{stockIds}")
-    public List<Watchlist> removeStockFromGroup(
-            @PathVariable Long groupId,
-            @PathVariable List<Long> stockIds
-    ) {
-        return watchlistGroupService.removeStocksFromGroup(groupId, stockIds);
+    @DeleteMapping("/{groupName}/stocks")
+    @Operation(summary = "Remove stocks from a watchlist group", description = "Disassociates stocks from an existing watchlist group by its name.")
+    public ResponseEntity<List<Watchlist>> removeStocksFromGroup(
+            @PathVariable String groupName,
+            @RequestBody List<Long> stockIds) {
+        List<Watchlist> updatedWatchlists = watchlistGroupService.removeStocksFromGroup(groupName, stockIds);
+        return ResponseEntity.ok(updatedWatchlists);
     }
 }

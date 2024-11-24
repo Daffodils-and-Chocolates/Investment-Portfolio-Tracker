@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,30 +19,18 @@ import java.util.List;
 @Table(name = "watchlist_groups")
 public class WatchlistGroup {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @NotNull
-    @Column(name = "name", unique = true, nullable = false)
-    private String name;
+    @Column(name = "group_name", unique = true, nullable = false)
+    private String groupName;
 
+    @Column(name ="group_description")
+    private String groupDescription;
+
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @JsonIgnore
-    @JoinColumn(name = "watchlist_id", nullable = false)
-    private Watchlist watchlist;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 }

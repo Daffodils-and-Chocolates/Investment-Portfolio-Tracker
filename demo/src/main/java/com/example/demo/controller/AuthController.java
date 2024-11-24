@@ -1,9 +1,9 @@
 package com.example.demo.controller;
 
-import com.example.demo.models.dtos.LoginResponse;
-import com.example.demo.models.dtos.LoginUserDto;
-import com.example.demo.models.dtos.RegisterUserDto;
-import com.example.demo.models.entity.User;
+import com.example.demo.models.dtos.authDto.LoginResponse;
+import com.example.demo.models.dtos.authDto.LoginUserDto;
+import com.example.demo.models.dtos.authDto.SignUpUserDto;
+import com.example.demo.models.dtos.authDto.SignUpResponseDto;
 import com.example.demo.service.AuthService;
 import com.example.demo.util.JwtService;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +23,16 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<User> signup(@RequestBody RegisterUserDto registerUserDto) {
+    public ResponseEntity<SignUpResponseDto> signup(@RequestBody SignUpUserDto signUpUserDto) {
         // Call AuthService to handle user registration
-        User registeredUser = authService.signup(registerUserDto);
+        SignUpResponseDto signup = authService.signup(signUpUserDto);
 
-        return ResponseEntity.ok(registeredUser);
+        SignUpResponseDto signupResponse = new SignUpResponseDto();
+        signupResponse.setToken(signup.getToken());
+        signupResponse.setCreatedUser(signup.getCreatedUser());
+        signupResponse.setExpiresIn(jwtService.getExpirationTime());
+
+        return ResponseEntity.ok(signupResponse);
     }
 
     @PostMapping("/login")

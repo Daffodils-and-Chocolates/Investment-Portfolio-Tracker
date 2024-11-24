@@ -1,5 +1,6 @@
-package com.example.demo.service.implementation;
+package com.example.demo.implementation;
 
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.models.entity.Watchlist;
 import com.example.demo.models.entity.WatchlistGroup;
 import com.example.demo.repository.WatchlistGroupRepository;
@@ -24,13 +25,16 @@ public class WatchlistGroupServiceImpl implements WatchlistGroupService {
 
     @Override
     public WatchlistGroup createWatchlistGroup(WatchlistGroup watchlistGroup) {
+        if (watchlistGroupRepository.existsByGroupName(watchlistGroup.getGroupName())) {
+            throw new IllegalArgumentException("Group name '" + watchlistGroup.getGroupName() + "' already exists.");
+        }
         return watchlistGroupRepository.save(watchlistGroup);
     }
 
     @Override
-    public WatchlistGroup getWatchlistGroupById(Long id) {
-        return watchlistGroupRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("WatchlistGroup not found with id " + id));
+    public WatchlistGroup getWatchlistGroupByName(String groupName) {
+        return watchlistGroupRepository.findByGroupName(groupName)
+                .orElseThrow(() -> new EntityNotFoundException("WatchlistGroup", groupName));
     }
 
     @Override
@@ -39,48 +43,55 @@ public class WatchlistGroupServiceImpl implements WatchlistGroupService {
     }
 
     @Override
-    public WatchlistGroup updateWatchlistGroup(Long id, WatchlistGroup watchlistGroupDetails) {
-        WatchlistGroup watchlistGroup = getWatchlistGroupById(id);
-        watchlistGroup.setName(watchlistGroupDetails.getName());
+    public WatchlistGroup updateWatchlistGroup(String groupName, WatchlistGroup watchlistGroupDetails) {
+        WatchlistGroup watchlistGroup = getWatchlistGroupByName(groupName);
+
+        // Updating group description (group name updates typically not allowed)
+        watchlistGroup.setGroupDescription(watchlistGroupDetails.getGroupDescription());
         return watchlistGroupRepository.save(watchlistGroup);
     }
 
     @Override
-    public void deleteWatchlistGroup(Long id) {
-        watchlistGroupRepository.deleteById(id);
+    public void deleteWatchlistGroup(String groupName) {
+        if (!watchlistGroupRepository.existsByGroupName(groupName)) {
+            throw new EntityNotFoundException("WatchlistGroup", groupName);
+        }
+        watchlistGroupRepository.deleteByGroupName(groupName);
     }
 
-    public List<Watchlist> addStocksToGroup(Long groupId, List<Long> stockIds) {
-        WatchlistGroup group = watchlistGroupRepository.findById(groupId)
-                .orElseThrow(() -> new RuntimeException("Group not found"));
+    @Override
+    public List<Watchlist> addStocksToGroup(String groupName, List<Long> stockIds) {
+        WatchlistGroup group = getWatchlistGroupByName(groupName);
 
         List<Watchlist> addedStocks = new ArrayList<>();
         for (Long stockId : stockIds) {
             Watchlist watchlist = watchlistRepository.findById(stockId)
-                    .orElseThrow(() -> new RuntimeException("Stock with ID " + stockId + " not found"));
-            watchlist.setGroups(group);
+                    .orElseThrow(() -> new EntityNotFoundException("Stock", stockId));
+
+            watchlist.setGroup(group);
             addedStocks.add(watchlistRepository.save(watchlist));
         }
         return addedStocks;
     }
 
     @Override
-    public List<Watchlist> removeStocksFromGroup(Long groupId, List<Long> stockIds) {
-        List<Watchlist> updatedWatchlists = new ArrayList<>();
+    public List<Watchlist> removeStocksFromGroup(String groupName, List<Long> stockIds) {
+        WatchlistGroup group = getWatchlistGroupByName(groupName);
 
+        List<Watchlist> updatedWatchlists = new ArrayList<>();
         for (Long stockId : stockIds) {
             Watchlist watchlist = watchlistRepository.findById(stockId)
-                    .orElseThrow(() -> new RuntimeException("Stock with ID " + stockId + " not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("Stock", stockId));
 
-            // Check if the stock is associated with the given group
-            if (watchlist.getGroup() != null && watchlist.getGroup().getId().equals(groupId)) {
-                watchlist.setGroup(null);  // Remove association with the group
+            if (watchlist.getGroup() != null && watchlist.getGroup().equals(group)) {
+                watchlist.setGroup(null); // Remove association with the group
                 updatedWatchlists.add(watchlistRepository.save(watchlist));
             } else {
-                throw new RuntimeException("Stock with ID " + stockId + " is not associated with the specified group");
+                throw new IllegalArgumentException(
+                        "Stock with ID " + stockId + " is not associated with group '" + groupName + "'."
+                );
             }
         }
-        return updatedWatchlists;  // Return the list of updated watchlists 
+        return updatedWatchlists;
     }
-
 }
