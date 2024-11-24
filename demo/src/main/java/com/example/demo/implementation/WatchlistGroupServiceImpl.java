@@ -58,7 +58,7 @@ public class WatchlistGroupServiceImpl implements WatchlistGroupService {
         for (Long stockId : stockIds) {
             Watchlist watchlist = watchlistRepository.findById(stockId)
                     .orElseThrow(() -> new RuntimeException("Stock with ID " + stockId + " not found"));
-            watchlist.setGroup(group);
+            watchlist.setGroups(group);
             addedStocks.add(watchlistRepository.save(watchlist));
         }
         return addedStocks;
