@@ -1,39 +1,67 @@
 <div class="container mt-4">
   <h2 class="text-center">Watchlist</h2>
 
-  <!-- Check if there's stock data -->
-  <div *ngIf="stockData.length > 0; else noData">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Stock Symbol</th>
-          <th>Price</th>
-          <th>Change</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          *ngFor="let stock of stockData; let i = index"
-          [attr.data-index]="i"
-        >
-          <td>{{ i + 1 }}</td>
-          <td>{{ stock.symbol }}</td>
-          <td>{{ stock.price | currency }}</td>
-          <td
-            [ngClass]="{
-              'text-success': stock.change >= 0,
-              'text-danger': stock.change < 0
-            }"
-          >
-            {{ stock.change | number : "1.2-2" }}%
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Group Selector -->
+  <div class="d-flex justify-content-center mb-4">
+    <select
+      class="form-select w-50"
+      [(ngModel)]="selectedGroup"
+      (change)="loadStocksByGroup(selectedGroup)"
+    >
+      <option value="All">All</option>
+      <option *ngFor="let group of groupNames" [value]="group">{{ group }}</option>
+    </select>
   </div>
 
-  <!-- No data message -->
+  <!-- Stocks Table -->
+  <div *ngIf="selectedGroup === 'All'; else groupedView">
+    <div *ngIf="stocks$ | async as stocks; else noData">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Stock Symbol</th>
+            <th>Price</th>
+            <th>Volume</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let stock of stocks; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ stock.symbol }}</td>
+            <td>{{ stock.price | currency }}</td>
+            <td>{{ stock.volume | number:'1.5-5' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Grouped Stocks -->
+  <ng-template #groupedView>
+    <div *ngIf="groupedStocks[selectedGroup]?.length > 0; else noData">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Stock Symbol</th>
+            <th>Price</th>
+            <th>Volume</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let stock of groupedStocks[selectedGroup]; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ stock.symbol }}</td>
+            <td>{{ stock.price | currency }}</td>
+            <td>{{ stock.volume | number:'1.5-5' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-template>
+
+  <!-- No Data Template -->
   <ng-template #noData>
     <p class="text-center text-muted">
       No stock data available. Please wait...

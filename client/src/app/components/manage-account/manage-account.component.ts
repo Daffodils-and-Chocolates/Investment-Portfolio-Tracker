@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ManageAccountService } from '../../services/manage-account.service';
-import { GetUserDto, UpdateUserRequestDto } from '../../dto/dtoAll';
+import { GetUserDto, UpdateUserRequestDto } from '../../models/dto/dtoAll';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({

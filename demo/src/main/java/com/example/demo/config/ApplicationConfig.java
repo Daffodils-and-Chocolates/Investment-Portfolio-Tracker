@@ -14,12 +14,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @Configuration
 public class ApplicationConfig {
 
-    private final PasswordService passwordService;
     private final UserRepository userRepository;
 
-    // Constructor-based injection
-    public ApplicationConfig(PasswordService passwordService, UserRepository userRepository) {
-        this.passwordService = passwordService;
+    public ApplicationConfig( UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -38,7 +35,7 @@ public class ApplicationConfig {
     public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordService passwordService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordService); // Use PasswordService as PasswordEncoder
+        authProvider.setPasswordEncoder(passwordService);
         return authProvider;
     }
 }

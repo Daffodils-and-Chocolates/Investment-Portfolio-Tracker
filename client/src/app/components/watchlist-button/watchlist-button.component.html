@@ -1,0 +1,11 @@
+<div class="d-inline-flex align-items-center">
+  <button
+    class="btn btn-link p-0"
+    [ngClass]="isInWatchlist? 'text-danger' : 'text-success'"
+    (click)="openWatchlistDialog()"
+    title="Add to Watchlist"
+  >
+    <i *ngIf="!isInWatchlist" class="bi bi-plus-circle fs-5"></i>
+    <i *ngIf="isInWatchlist" class="bi bi-dash-circle fs-5"></i>
+  </button>
+</div>

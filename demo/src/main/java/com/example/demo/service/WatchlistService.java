@@ -15,6 +15,8 @@ public interface WatchlistService {
     void deleteWatchlist(Long id);
     List<Stock> getStocksByUserIdAndGroupName(Long userId, String groupName);
     List<Stock> findAllStocksByUserId(Long userId);
+    List<String> getGroupNamesByUserId(Long userId);
     List<Stock> addStocksToGroup(User user, String groupName, List<Stock> createdStocks);
     List<Stock> removeStocksFromGroup(User user, String groupName, List<Long> stockIds);
+    List<String> getGroupNamesForStockAndUser(Long userId, Long stockId);
 }

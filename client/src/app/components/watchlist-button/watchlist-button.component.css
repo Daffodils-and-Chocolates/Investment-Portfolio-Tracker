@@ -1,0 +1,10 @@
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+
+.btn-link:hover .bi-plus-circle {
+  transform: scale(1.1);
+  transition: transform 0.2s;
+}
+.btn-link:hover .bi-dash-circle {
+  transform: scale(1.1);
+  transition: transform 0.2s;
+}

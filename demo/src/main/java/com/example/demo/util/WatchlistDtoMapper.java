@@ -1,10 +1,9 @@
 package com.example.demo.util;
 
 import com.example.demo.models.dtos.watchlistDto.UserDto;
-import com.example.demo.models.dtos.watchlistDto.WatchlistGroupDto;
 import com.example.demo.models.dtos.watchlistDto.WatchlistResponseDto;
-import com.example.demo.models.entity.Stock;
 import com.example.demo.models.entity.Watchlist;
+import com.example.demo.models.entity.WatchlistGroup;
 
 public class WatchlistDtoMapper {
     public static WatchlistResponseDto toWatchlistResponseDto(Watchlist watchlist) {
@@ -19,7 +18,7 @@ public class WatchlistDtoMapper {
 
         responseDto.setStock(watchlist.getStock());
 
-        WatchlistGroupDto groupDto = new WatchlistGroupDto();
+        WatchlistGroup groupDto = new WatchlistGroup();
         groupDto.setGroupName(watchlist.getGroup().getGroupName());
         responseDto.setGroup(groupDto);
 

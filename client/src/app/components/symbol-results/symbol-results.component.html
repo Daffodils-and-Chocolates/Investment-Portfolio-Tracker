@@ -1,0 +1,51 @@
+<div class="container mt-4">
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <div *ngIf="results.length === 0" class="alert alert-info">
+      Search could not find anything...
+    </div>
+
+    <div *ngIf="results.length > 0">
+      <h2>{{totalCount}} Search Results</h2>
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col" *ngFor="let result of paginatedResults">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">{{ result.displaySymbol }}</h5>
+              <h6 class="card-subtitle">{{ result.type }}</h6>
+              <p class="card-text">{{ result.description }}</p>
+              <app-watchlist-button [stock]="result"></app-watchlist-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" (click)="setPage(currentPage - 1)">Previous</a>
+          </li>
+          <li
+            class="page-item"
+            *ngFor="let page of pages"
+            [class.active]="page === currentPage"
+          >
+            <a class="page-link" (click)="setPage(page)">{{ page }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link" (click)="setPage(currentPage + 1)">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

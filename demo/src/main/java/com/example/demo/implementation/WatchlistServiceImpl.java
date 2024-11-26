@@ -40,7 +40,7 @@ public class WatchlistServiceImpl implements WatchlistService {
         newWatchlist.setStock(stock);
 
         WatchlistGroup group = watchlistGroupRepository.findByGroupName(watchlistRequestDto.getGroup().getGroupName())
-                .orElseThrow(() -> new EntityNotFoundException("Watchlist group", watchlistRequestDto.getGroup().getGroupName()));
+                .orElseGet(() -> watchlistGroupRepository.save(watchlistRequestDto.getGroup()));
         newWatchlist.setGroup(group);
 
         return WatchlistDtoMapper.toWatchlistResponseDto(watchlistRepository.save(newWatchlist));
@@ -128,7 +128,16 @@ public class WatchlistServiceImpl implements WatchlistService {
                     .orElseThrow(() -> new EntityNotFoundException("Stock not found in group ", groupName));
             watchlistRepository.delete(watchlist);
         }
-
         return watchlistRepository.findStocksByUserIdAndGroupName(user.getUserId(), group.getGroupName());
     }
+
+    @Override
+    public List<String> getGroupNamesByUserId(Long userId) {
+        return watchlistRepository.findDistinctGroupNamesByUserId(userId);
+    }
+
+    public List<String> getGroupNamesForStockAndUser(Long userId, Long stockId){
+        return watchlistRepository.findGroupNamesByUserIdAndStockId(userId, stockId);
+    }
+
 }

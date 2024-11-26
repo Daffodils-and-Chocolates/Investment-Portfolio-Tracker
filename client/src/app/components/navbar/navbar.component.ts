@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { WatchlistService } from '../../services/watchlist.service';
 
 @Component({
   selector: 'app-navbar',
@@ -7,15 +8,15 @@ import { Router } from '@angular/router';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
-
-  constructor(private router: Router) {}
+  constructor(private router: Router, private watchlistService: WatchlistService) {}
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');  // Check if token exists
+    return !!localStorage.getItem('token');
   }
 
   logout(): void {
-    localStorage.removeItem('token');  // Remove JWT token
-    this.router.navigate(['/']);  //REdirect to home
+    localStorage.removeItem('token'); 
+    this.watchlistService.refreshWatchlist();
+    this.router.navigate(['/']); 
   }
 }

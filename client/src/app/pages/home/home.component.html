@@ -1,0 +1,6 @@
+<div class="market-data">
+  <div *ngFor="let update of marketUpdates" class="update-item">
+    <strong>{{ update.data[0].s }}</strong
+    >: ${{ update.data[0].p.toFixed(2) }} (Volume: {{ update.data[0].v }})
+  </div>
+</div>

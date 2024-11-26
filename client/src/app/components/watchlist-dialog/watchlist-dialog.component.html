@@ -1,0 +1,67 @@
+<!-- Background Overlay -->
+<div *ngIf="isModalVisible" class="modal-overlay"></div>
+
+<!-- Modal Content -->
+<div *ngIf="isModalVisible" class="modal">
+  <div class="modal-content border-0">
+    <div class="modal-header border-bottom-0">
+      <h5 class="modal-title">Add to Watchlist</h5>
+      <button type="button" class="btn-close" (click)="onClose()" style="position: absolute; right: 15px;"></button>
+    </div>
+    <div class="modal-body">
+      <!-- Loading State -->
+      <div *ngIf="data.loading" class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>  
+
+      <!-- Error State -->
+      <div *ngIf="data.error" class="alert alert-danger mb-3">
+        {{ data.error }}
+      </div>
+
+      <!-- Existing Watchlist Groups -->
+      <div *ngIf="!data.loading" class="mb-3">
+        <div
+          *ngIf="data.groupNames.length === 0"
+          class="text-muted text-center py-2"
+        >
+          No watchlist groups found
+        </div>
+
+        <div class="list-group">
+          <button
+            *ngFor="let groupName of data.groupNames"
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            (click)="onAddToGroup(groupName)"
+          >
+            {{ groupName }}
+            <i class="bi bi-plus-circle"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Create New Watchlist Group -->
+      <div class="mt-4 pt-3 border-top">
+        <h6 class="mb-3">Create New Watchlist</h6>
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter group name"
+            [(ngModel)]="data.newGroupName"
+            (keyup.enter)="onCreateGroup()"
+          />
+          <button
+            class="btn btn-primary"
+            [disabled]="!data.newGroupName.trim()"
+            (click)="onCreateGroup()"
+          >
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

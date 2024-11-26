@@ -1,0 +1,23 @@
+.dropdown-custom {
+  background-color: transparent;
+  color: #ffffff;
+}
+
+::placeholder{
+  background-color: transparent;
+  color: #70686f;
+}
+
+.dropdown-custom option {
+  background-color: #333;
+  color: #ffffff;
+}
+
+.dropdown-custom option:hover {
+  background-color: #555;
+}
+
+.dropdown-custom option:checked {
+  background-color: #444;
+  color: #ffffff;
+}

@@ -15,6 +15,13 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ManageAccountComponent } from './components/manage-account/manage-account.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
+import { SymbolResultsComponent } from './components/symbol-results/symbol-results.component';
+import { CompanyProfileComponent } from './components/company-profile/company-profile.component';
+import { CryptoResultsComponent } from './components/crypto-results/crypto-results.component';
+import { WatchlistButtonComponent } from './components/watchlist-button/watchlist-button.component';
+import { WatchlistDialogComponent } from './components/watchlist-dialog/watchlist-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -24,7 +31,13 @@ import { ReactiveFormsModule } from '@angular/forms';
     WatchlistComponent,
     HomeComponent,
     NavbarComponent,
-    ManageAccountComponent
+    ManageAccountComponent,
+    SearchBarComponent,
+    SymbolResultsComponent,
+    CompanyProfileComponent,
+    CryptoResultsComponent,
+    WatchlistButtonComponent,
+    WatchlistDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -35,17 +48,18 @@ import { ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,
     ToastrModule.forRoot({
       timeOut: 3000,  // Duration for each toast
-      positionClass: 'toast-top-right',  // Position on screen
+      positionClass: 'toast-top-right',
       preventDuplicates: true, 
       closeButton: true,    
       progressBar: true
-    })
+    }),
+    MatDialogModule
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true,
+      multi: true
     }
   ],
   bootstrap: [AppComponent]

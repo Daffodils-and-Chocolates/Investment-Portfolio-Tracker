@@ -1,9 +1,10 @@
 package com.example.demo.implementation;
 
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.models.entity.Stock;
 import com.example.demo.repository.StockRepository;
 import com.example.demo.service.StockService;
-import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class StockServiceImpl implements StockService {
     @Override
     public Stock updateStock(Long stockId, Stock stockDetails) {
         Stock existingStock = stockRepository.findById(stockId)
-                .orElseThrow(() -> new EntityNotFoundException("Stock not found with id: " + stockId));
+                .orElseThrow(() -> new EntityNotFoundException("Stock", stockId));
 
         if (stockDetails.getSymbol() != null) {
             existingStock.setSymbol(stockDetails.getSymbol());
@@ -45,13 +46,13 @@ public class StockServiceImpl implements StockService {
     @Override
     public Stock getStockById(Long stockId) {
         return stockRepository.findById(stockId)
-                .orElseThrow(() -> new EntityNotFoundException("Stock not found with id: " + stockId));
+                .orElseThrow(() -> new EntityNotFoundException("Stock", stockId));
     }
 
     @Override
     public Stock getStockBySymbol(String symbol) {
         return stockRepository.findBySymbol(symbol)
-                .orElseThrow(() -> new EntityNotFoundException("Stock not found with symbol: " + symbol));
+                .orElseThrow(() -> new EntityNotFoundException("Stock: ", symbol));
     }
 
     @Override
@@ -62,7 +63,7 @@ public class StockServiceImpl implements StockService {
     @Override
     public void deleteStock(Long stockId) {
         if (!stockRepository.existsById(stockId)) {
-            throw new EntityNotFoundException("Stock not found with id: " + stockId);
+            throw new EntityNotFoundException("Stock", stockId);
         }
         stockRepository.deleteById(stockId);
     }

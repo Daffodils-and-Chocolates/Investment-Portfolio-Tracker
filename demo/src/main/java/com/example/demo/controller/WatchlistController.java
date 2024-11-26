@@ -39,8 +39,21 @@ public class WatchlistController {
         return watchlistService.getAllWatchlists();
     }
 
+    @Operation(
+            summary = "Get all stocks for a user",
+            description = "Retrieve a list of all stocks in the watchlist for a specific user, identified by their user ID."
+    )
+    @GetMapping("/user")
+    public ResponseEntity<List<Stock>> getAllStocksByUserId(@AuthenticationPrincipal User user) {
+        List<Stock> stocks = watchlistService.findAllStocksByUserId(user.getUserId());
+        if (stocks.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(stocks);
+    }
+
     @Operation(summary = "Retrieve stocks by group name by the user", description = "Retrieve all stocks that belong...")
-    @GetMapping("/group/{groupName}")
+    @GetMapping("/user/{groupName}")
     public List<Stock> getStocksByUserAndGroupName(@AuthenticationPrincipal User user, @PathVariable String groupName) {
         return watchlistService.getStocksByUserIdAndGroupName(user.getUserId(), groupName);
     }
@@ -73,5 +86,22 @@ public class WatchlistController {
                                                              @AuthenticationPrincipal User user) {
         List<Stock> updatedStocks = watchlistService.removeStocksFromGroup(user, groupName, stockIds);
         return ResponseEntity.ok(updatedStocks);
+    }
+
+    @Operation(summary = "get all the group names associated with a user")
+    @GetMapping("/user/groups")
+    public ResponseEntity<List<String>> getGroupNamesByUser(@AuthenticationPrincipal User user) {
+        Long userId = user.getUserId();
+        List<String> groupNames = watchlistService.getGroupNamesByUserId(userId);
+        return ResponseEntity.ok(groupNames);
+    }
+
+    @Operation(summary = "get all the group names associated with a user and a particular stock")
+    @GetMapping("/stocks/groups")
+    public ResponseEntity<List<String>> getGroupsForStock(
+            @AuthenticationPrincipal User user,
+            @RequestParam Long stockId) {
+        List<String> groupNames = watchlistService.getGroupNamesForStockAndUser(user.getUserId(), stockId);
+        return ResponseEntity.ok(groupNames);
     }
 }

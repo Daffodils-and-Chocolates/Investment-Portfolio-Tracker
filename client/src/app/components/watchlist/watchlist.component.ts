@@ -1,61 +1,125 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { WebsocketService } from '../../services/websocket.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { MarketUpdate, Stock } from '../../models/stock.interface';
+import { WatchlistService } from '../../services/watchlist.service';
+import { FinnhubService } from '../../services/finnhub.service';
 
 @Component({
   selector: 'app-watchlist',
   templateUrl: './watchlist.component.html',
-  styleUrls: ['./watchlist.component.css'],
+  styleUrls: ['./watchlist.component.css']
 })
 export class WatchlistComponent implements OnInit, OnDestroy {
-  stockData: any[] = [];
-  private wsUrl = 'ws://localhost:5000/ws/finnhub'; // Adjust backend WebSocket URL as needed
-  private websocketSubscription: any;
+  private stocksSubject = new BehaviorSubject<Stock[]>([]);
+  stocks$ = this.stocksSubject.asObservable();
+  groupedStocks: { [key: string]: Stock[] } = {};
+  groupNames: string[] = [];
+  selectedGroup: string = 'All';
+  private marketDataSubscription?: Subscription;
+  private watchlistSubscription?: Subscription;
 
-  constructor(private websocketService: WebsocketService) {}
+  constructor(
+    private watchlistService: WatchlistService,
+    private finnhubService: FinnhubService,
+    private http: HttpClient
+  ) {}
 
   ngOnInit(): void {
-    this.websocketSubscription = this.websocketService
-      .connect(this.wsUrl)
-      .subscribe((data: any) => {
-        if (data.type === 'trade') {
-          this.updateStockData(data);
-        }
-      }); 
-      // Mock data for testing
-  this.stockData = [
-    { symbol: 'AAPL', price: 174.35, change: 1.25 },
-    { symbol: 'TSLA', price: 245.67, change: -2.87 },
-    { symbol: 'GOOGL', price: 2894.33, change: 0.12 },
-    { symbol: 'MSFT', price: 338.77, change: -1.45 },
-    { symbol: 'AMZN', price: 125.63, change: 2.78 },
-  ];
-  }
-
-  updateStockData(data: any): void {
-    const stockUpdates = data.data; // Assuming 'data' contains an array of stock updates
-
-    stockUpdates.forEach((update: any) => {
-      const stock = this.stockData.find((s) => s.symbol === update.s);
-
-      if (stock) {
-        // Update existing stock entry
-        stock.price = update.p;
-        stock.change = ((update.p - stock.price) / stock.price) * 100;
-      } else {
-        // Add new stock entry
-        this.stockData.push({
-          symbol: update.s,
-          price: update.p,
-          change: 0,
-        });
-      }
-    });
+    this.fetchGroupNames();
+    this.loadAllStocks();
   }
 
   ngOnDestroy(): void {
-    if (this.websocketSubscription) {
-      this.websocketSubscription.unsubscribe();
+    this.marketDataSubscription?.unsubscribe();
+    this.watchlistSubscription?.unsubscribe();
+  }
+
+  private setupMarketDataStream(stocks: Stock[]) {
+    this.marketDataSubscription?.unsubscribe();
+
+    const symbols = stocks.map(stock => stock.symbol);
+
+    this.finnhubService.subscribeToSymbols(symbols)
+      .then(() => {
+        this.marketDataSubscription = this.finnhubService.getMarketDataStream()
+          .subscribe({
+            next: (update: MarketUpdate) => {
+              this.updateStockPrice(update);
+            },
+            error: (error) => {
+              console.error('Stream error:', error);
+            }
+          });
+      })
+      .catch(error => {
+        console.error('Error setting up market data:', error);
+      });
+  }
+
+  private updateStockPrice(update: MarketUpdate) {
+    const currentStocks = this.stocksSubject.value;
+    const updatedStocks = currentStocks.map(stock => {
+      if (stock.symbol === update.data[0].s) {
+        return {
+          ...stock,
+          price: update.data[0].p,
+          volume: update.data[0].v,
+        };
+      }
+      return stock;
+    });
+
+    this.stocksSubject.next(updatedStocks);
+    
+    if (this.selectedGroup !== 'All') {
+      this.groupedStocks[this.selectedGroup] = this.groupedStocks[this.selectedGroup].map(stock => {
+        if (stock.symbol === update.data[0].s) {
+          return {
+            ...stock,
+            price: update.data[0].p,
+            volume: update.data[0].v,
+          };
+        }
+        return stock;
+      });
     }
-    this.websocketService.disconnect();
+  }
+
+  fetchGroupNames() {
+    this.http
+      .get<string[]>('http://localhost:5000/api/watchlist/user/groups')
+      .subscribe({
+        next: (groups) => this.groupNames = groups,
+        error: (error) => console.error('Error fetching group names:', error)
+      });
+  }
+
+  loadAllStocks() {
+    this.watchlistSubscription = this.watchlistService.getAllStocks()
+      .subscribe({
+        next: (stocks) => {
+          this.stocksSubject.next(stocks);
+          this.setupMarketDataStream(stocks);
+        },
+        error: (error) => console.error('Error loading stocks:', error)
+      });
+  }
+
+  loadStocksByGroup(groupName: string) {
+    this.selectedGroup = groupName;
+    
+    if (groupName === 'All') {
+      this.loadAllStocks();
+    } else {
+      this.watchlistSubscription = this.watchlistService.getStocksByGroupName(groupName)
+        .subscribe({
+          next: (stocks) => {
+            this.groupedStocks[groupName] = stocks;
+            this.setupMarketDataStream(stocks);
+          },
+          error: (error) => console.error('Error fetching stocks by group:', error)
+        });
+    }
   }
 }

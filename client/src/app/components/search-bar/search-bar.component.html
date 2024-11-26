@@ -1,0 +1,30 @@
+<div class="d-flex justify-content-center align-items-center">
+  <div class="input-group" style="max-width: 600px; width: 100%">
+    <!-- Dropdown -->
+    <select
+      class="form-select dropdown-custom"
+      style="max-width: 170px"
+      [(ngModel)]="searchType"
+      title="Select search type"
+    >
+      <option value="symbol">Symbol Lookup</option>
+      <option value="company">Company Profile</option>
+      <option value="crypto">Crypto Exchange</option>
+    </select>
+
+    <!-- Search Bar -->
+    <input
+      type="text"
+      class="form-control bg-transparent text-light "
+      [placeholder]="getPlaceholder()"
+      style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 700px;"
+      [(ngModel)]="searchQuery"
+      (keyup.enter)="search()"
+    />
+
+    <!-- Search Button -->
+    <button class="btn btn-primary" (click)="search()">
+      <i class="bi bi-search"></i>
+    </button>
+  </div>
+</div>
