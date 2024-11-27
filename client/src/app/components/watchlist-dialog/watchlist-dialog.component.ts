@@ -18,9 +18,11 @@ export class WatchlistDialogComponent {
       error: string;
       newGroupName: string;
       stock: Stock;
+      groupsWithStock:string[];
     }
   ) {
     this.isModalVisible = true;
+    console.log("in watchlist Dialog groupsWithStock : "+this.data.groupsWithStock);
   }
 
   onClose(): void {

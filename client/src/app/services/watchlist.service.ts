@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, forkJoin, switchMap } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { Stock, WatchlistRequestDto, WatchlistResponseDto } from '../models/stock.interface';
 
 @Injectable({
@@ -39,18 +39,37 @@ export class WatchlistService {
   }
 
   removeStocksFromGroup(groupName: string, stocks: Stock[]): Observable<Stock[]> {
-    const stockIdObservables = stocks.map((stock) => {
-        return this.getStockBySymbol(stock.symbol);
-    });
+    const stockIds: number[] = []; 
   
-    return forkJoin(stockIdObservables).pipe(
-      switchMap((stockIds) =>
-        this.http.delete<Stock[]>(`${this.apiUrl}/${groupName}/remove-stocks`, {
-          body: stockIds,
-        })
-      )
-    );
+    return new Observable<Stock[]>((observer) => {
+      let completedRequests = 0;
+  
+      stocks.forEach((stock) => {
+        this.getStockBySymbol(stock.symbol).subscribe({
+          next: (response) => {
+            stockIds.push(response.stockId); 
+            completedRequests++;
+  
+            if (completedRequests === stocks.length) {
+              this.http
+                .delete<Stock[]>(`${this.apiUrl}/${groupName}/remove-stocks`, {
+                  body: stockIds,
+                })
+                .subscribe({
+                  next: (response) => {
+                    observer.next(response); // Send response to the observer
+                    observer.complete();
+                  },
+                  error: (err) => observer.error(err),
+                });
+            }
+          },
+          error: (err) => observer.error(err),
+        });
+      });
+    });
   }
+  
   
   isStockInWatchlist(symbol: string): boolean {
     const stocks = this.watchlistStocksSubject.value;
@@ -72,13 +91,13 @@ export class WatchlistService {
   }
 
   createWatchlistEntry(request :WatchlistRequestDto) : Observable<WatchlistResponseDto>{
-    return this.http.post<WatchlistResponseDto>(`${this.apiUrl}`,{
-      body: request
-    });
+    return this.http.post<WatchlistResponseDto>(`${this.apiUrl}`,
+      request
+    );
   }
 
   getGroupNamesByStock(stockId : number ): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/user/groups`,{
+    return this.http.get<string[]>(`${this.apiUrl}/stocks/groups`,{
       params: {stockId}
     });
   }

@@ -1,22 +1,21 @@
 .container {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-  }
-  
-  .table {
-    margin-top: 20px;
-  }
-  
-  .text-success {
-    color: #28a745 !important;
-  }
-  
-  .text-danger {
-    color: #dc3545 !important;
-  }
-  
-  .select-group {
-    margin-bottom: 20px;
-  }
-  
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.table {
+  margin-top: 20px;
+}
+
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.select-group {
+  margin-bottom: 20px;
+}

@@ -5,7 +5,7 @@
 <div *ngIf="isModalVisible" class="modal">
   <div class="modal-content border-0">
     <div class="modal-header border-bottom-0">
-      <h5 class="modal-title">Add to Watchlist</h5>
+      <h5 class="modal-title">{{data.stock.description}}</h5>
       <button type="button" class="btn-close" (click)="onClose()" style="position: absolute; right: 15px;"></button>
     </div>
     <div class="modal-body">
@@ -34,13 +34,21 @@
           <button
             *ngFor="let groupName of data.groupNames"
             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-            (click)="onAddToGroup(groupName)"
+            [ngClass]="(data.groupsWithStock?.includes(groupName))? 'text-danger' : 'text-success'"
           >
             {{ groupName }}
-            <i class="bi bi-plus-circle"></i>
+            <i
+              *ngIf="!data.groupsWithStock?.includes(groupName)"
+              class="bi bi-plus-circle fs-5"
+              (click)="onAddToGroup(groupName)"
+            ></i>
+            <i
+              *ngIf="data.groupsWithStock?.includes(groupName)"
+              class="bi bi-dash-circle fs-5"
+              (click)="onRemoveFromGroup(groupName)"
+            ></i>
           </button>
-        </div>
-      </div>
+        </div>        
 
       <!-- Create New Watchlist Group -->
       <div class="mt-4 pt-3 border-top">
