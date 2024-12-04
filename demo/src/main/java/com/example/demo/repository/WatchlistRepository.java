@@ -25,8 +25,8 @@ public interface WatchlistRepository extends JpaRepository<Watchlist, Long> {
 
     List<Watchlist> findByGroupGroupName(String groupName);
 
-    @Query("SELECT DISTINCT g.groupName FROM Watchlist w " +
-            "JOIN w.group g " +
-            "WHERE w.user.userId = :userId AND w.stock.stockId = :stockId")
+//    @Query("SELECT DISTINCT g.groupName FROM Watchlist w " +
+//            "JOIN w.group g " +
+//            "WHERE w.user.userId = :userId AND w.stock.stockId = :stockId")
     List<String> findGroupNamesByUserIdAndStockId(@Param("userId") Long userId, @Param("stockId") Long stockId);
 }

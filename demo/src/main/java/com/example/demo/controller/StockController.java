@@ -3,19 +3,17 @@ package com.example.demo.controller;
 import com.example.demo.models.entity.Stock;
 import com.example.demo.service.StockService;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/stock")
 public class StockController {
 
     private final StockService stockService;
-
-    StockController(StockService stockService) {
-        this.stockService = stockService;
-    }
 
     @Operation(summary = "get all stocks")
     @GetMapping("/all")

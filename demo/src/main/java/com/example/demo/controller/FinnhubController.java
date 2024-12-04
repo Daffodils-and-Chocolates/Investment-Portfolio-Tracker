@@ -1,18 +1,18 @@
 package com.example.demo.controller;
 
 import com.example.demo.config.FinnhubWebSocketClient;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/finnhub")
 public class FinnhubController {
 
-    @Autowired
-    private FinnhubWebSocketClient webSocketClient;
+    private final FinnhubWebSocketClient webSocketClient;
 
     @GetMapping("/stream")
     public SseEmitter streamMarketData() {

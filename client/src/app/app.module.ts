@@ -22,6 +22,8 @@ import { CryptoResultsComponent } from './components/crypto-results/crypto-resul
 import { WatchlistButtonComponent } from './components/watchlist-button/watchlist-button.component';
 import { WatchlistDialogComponent } from './components/watchlist-dialog/watchlist-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { IpoCalendarComponent } from './components/home/ipo-calender/ipo-calender.component';
+import { MarketDashboardComponent } from './components/home/market-dashboard/market-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +39,9 @@ import { MatDialogModule } from '@angular/material/dialog';
     CompanyProfileComponent,
     CryptoResultsComponent,
     WatchlistButtonComponent,
-    WatchlistDialogComponent
+    WatchlistDialogComponent,
+    IpoCalendarComponent,
+    MarketDashboardComponent
   ],
   imports: [
     BrowserModule,

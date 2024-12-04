@@ -6,21 +6,18 @@ import com.example.demo.models.dtos.authDto.SignUpUserDto;
 import com.example.demo.models.dtos.authDto.SignUpResponseDto;
 import com.example.demo.service.AuthService;
 import com.example.demo.util.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final JwtService jwtService;
     private final AuthService authService;
-
-    public AuthController(JwtService jwtService, AuthService authService) {
-        this.jwtService = jwtService;
-        this.authService = authService;
-    }
 
     @PostMapping("/signup")
     public ResponseEntity<SignUpResponseDto> signup(@RequestBody SignUpUserDto signUpUserDto) {

@@ -1,0 +1,152 @@
+<div class="container my-4">
+  <div class="row">
+    <!-- Left Column: Market News -->
+    <div class="col-lg-8 order-lg-1 order-2">
+      <h2 class="mb-4">Market News</h2>
+
+      <!-- Dropdown to select items per page -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- News Groups -->
+        <div class="news-groups d-flex">
+          <div
+            *ngFor="let group of newsGroups"
+            class="group-item me-3"
+            [class.active]="group === activeGroup"
+            (click)="changeNewsGroup(group)"
+          >
+            {{ group }}
+          </div>
+        </div>
+        <!-- Dropdown for News Per Page -->
+        <div>
+          <select
+            id="newsPerPage"
+            class="form-select w-auto"
+            [(ngModel)]="newsPerPage"
+            (change)="changeNewsPerPage(newsPerPage)"
+          >
+            <option *ngFor="let count of newsCategories" [value]="count">
+              {{ count }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- News Cards -->
+      <div *ngFor="let news of paginatedNews" class="card mb-3">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img
+              [src]="news.image"
+              class="img-fluid rounded-start"
+              alt="News Image"
+            />
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ news.headline }}</h5>
+              <p class="card-text" *ngIf="activeGroup == 'forex'; else forexIf" [innerHTML]="news.summary">
+              </p>
+              <ng-template #forexIf>
+                <p class="card-text">{{ news.summary }}</p>
+              </ng-template>
+              <a
+                [href]="news.url"
+                class="btn btn-primary btn-sm"
+                target="_blank"
+                >Read More</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <nav aria-label="News pagination" class="mt-4">
+        <ul class="pagination">
+          <!-- Previous Button -->
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="changePage(currentPage - 1)">
+              Previous
+            </button>
+          </li>
+
+          <!-- Page Numbers -->
+          <li
+            class="page-item"
+            *ngFor="let page of totalPages"
+            [class.active]="page === currentPage"
+          >
+            <button class="page-link" (click)="changePage(page)">
+              {{ page }}
+            </button>
+          </li>
+
+          <!-- Next Button -->
+          <li
+            class="page-item"
+            [class.disabled]="currentPage === totalPages.length"
+          >
+            <button class="page-link" (click)="changePage(currentPage + 1)">
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Right Column: Market Status & Holidays -->
+    <div class="col-lg-4 order-lg-2 order-1 mb-4">
+      <div
+        *ngIf="marketStatus"
+        class="market-status"
+        [ngStyle]="{
+          background: marketStatus.isOpen
+            ? 'green'
+            : 'rgba(225, 119, 119, 0.525)'
+        }"
+      >
+        <h4>
+          Market Status :
+          <span style="font-size: smaller">
+            {{ marketStatus.isOpen ? "Open" : "Closed" }}
+          </span>
+        </h4>
+        <!-- : {{marketStatus.isOpen}} -->
+        <span
+          class="status-circle"
+          [ngClass]="{
+            open: marketStatus.isOpen,
+            closed: !marketStatus.isOpen
+          }"
+        ></span>
+
+        <div class="status-item">
+          <span>Exchange: {{ marketStatus.exchange }}</span>
+        </div>
+
+        <div *ngIf="marketStatus.session" class="status-item">
+          <span>Session: {{ marketStatus.session }}</span>
+        </div>
+
+        <div class="status-item">
+          <span>Timezone: {{ marketStatus.timezone }}</span>
+        </div>
+      </div>
+      <hr />
+      <h2>Market Holidays</h2>
+      <ul class="list-group">
+        <li
+          class="list-group-item"
+          *ngFor="let holiday of marketHolidays"
+          [class.active]="holiday.eventName === selectedHoliday"
+          (click)="selectHoliday(holiday.eventName)"
+        >
+          <strong>{{ holiday.eventName }}</strong> - {{ holiday.atDate }}
+        </li>
+      </ul>
+      <hr />
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

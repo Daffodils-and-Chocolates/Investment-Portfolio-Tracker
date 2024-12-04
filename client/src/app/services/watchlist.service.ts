@@ -51,8 +51,7 @@ export class WatchlistService {
             completedRequests++;
   
             if (completedRequests === stocks.length) {
-              this.http
-                .delete<Stock[]>(`${this.apiUrl}/${groupName}/remove-stocks`, {
+              this.http.delete<Stock[]>(`${this.apiUrl}/${groupName}/remove-stocks`, {
                   body: stockIds,
                 })
                 .subscribe({

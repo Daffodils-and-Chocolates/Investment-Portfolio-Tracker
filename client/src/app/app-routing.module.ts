@@ -9,6 +9,7 @@ import { ManageAccountComponent } from './components/manage-account/manage-accou
 import { CompanyProfileComponent } from './components/company-profile/company-profile.component';
 import { CryptoResultsComponent } from './components/crypto-results/crypto-results.component';
 import { SymbolResultsComponent } from './components/symbol-results/symbol-results.component';
+import { IpoCalendarComponent } from './components/home/ipo-calender/ipo-calender.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -19,6 +20,7 @@ const routes: Routes = [
   { path: 'symbol-results', component: SymbolResultsComponent },
   { path: 'company-profile', component: CompanyProfileComponent },
   { path: 'crypto-results', component: CryptoResultsComponent },
+  { path: 'ipo-calender', component: IpoCalendarComponent },
   // { path: 'portfolio', component: PortfolioComponent, canActivate: [AuthGuard] }, 
   { path: '**', redirectTo: '/home' }  // Redirect any unknown paths to home
 ];

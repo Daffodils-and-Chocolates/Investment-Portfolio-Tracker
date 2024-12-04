@@ -1,0 +1,43 @@
+<div class="container my-5">
+  <h1 class="text-center mb-4">IPO Calendar</h1>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="row g-3 mb-4">
+    <div class="col-md-5">
+      <label for="from" class="form-label">From Date</label>
+      <input type="date" id="from" formControlName="from" class="form-control"/>
+    </div>
+    <div class="col-md-5">
+      <label for="to" class="form-label">To Date</label>
+      <input type="date" id="to" formControlName="to" class="form-control" />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">Get</button>
+    </div>
+  </form>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <!-- IPO List -->
+  <div *ngIf="ipoCalendar.length > 0" class="row g-3">
+    <div *ngFor="let ipo of displayedIpoCalendar()" [ngClass]="onHome? 'col-md-6': 'col-md-4'">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="accent-blue">{{ ipo.name }}</h5>
+          <p class="card-text">
+            <strong>Symbol:</strong> {{ ipo.symbol }}<br />
+            <strong>Exchange:</strong> {{ ipo.exchange }}<br />
+            <strong>Date:</strong> {{ ipo.date }}<br />
+            <strong>Status:</strong> {{ ipo.status }}<br />
+            <strong>Shares:</strong> {{ ipo.numberOfShares | number }}<br />
+            <strong>Price Range:</strong> {{ ipo.price }}<br />
+            <strong>Total Value:</strong> {{ ipo.totalSharesValue | currency }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center mt-4" *ngIf="ipoCalendar.length > 4 && onHome==true">
+    <button class="btn btn-primary" (click)="showMore()">Show More</button>
+  </div>
+</div>
