@@ -106,10 +106,22 @@ public class WatchlistServiceImpl implements WatchlistService {
                 .orElseThrow(() -> new EntityNotFoundException("Watchlist group", groupName));
 
         for (Stock stock : createdStocks) {
+            Stock resolvedStock;
+
+            // Check if stockId is present
+            if (stock.getStockId() != null) {
+                resolvedStock = stockRepository.findById(stock.getStockId())
+                        .orElseThrow(() -> new EntityNotFoundException("Stock", stock.getStockId().toString()));
+            } else {
+                // Check if a stock with the same symbol exists
+                resolvedStock = stockRepository.findBySymbol(stock.getSymbol())
+                        .orElse(stock); // Use the provided stock object if none exists
+            }
+
             Watchlist newEntry = new Watchlist();
             newEntry.setGroup(group);
             newEntry.setUser(user);
-            newEntry.setStock(stock);
+            newEntry.setStock(resolvedStock);
             watchlistRepository.save(newEntry);
         }
 
@@ -126,7 +138,14 @@ public class WatchlistServiceImpl implements WatchlistService {
                     .filter(w -> w.getStock().getStockId().equals(stockId))
                     .findFirst()
                     .orElseThrow(() -> new EntityNotFoundException("Stock not found in group ", groupName));
+
+            boolean isStockReferencedElsewhere = watchlistRepository.existsByStockStockIdAndGroupGroupNameNot(stockId, groupName);
+
             watchlistRepository.delete(watchlist);
+
+            if (!isStockReferencedElsewhere) {
+                stockRepository.delete(watchlist.getStock());  // Assuming you have a stockRepository to delete stocks
+            }
         }
         return watchlistRepository.findStocksByUserIdAndGroupName(user.getUserId(), group.getGroupName());
     }

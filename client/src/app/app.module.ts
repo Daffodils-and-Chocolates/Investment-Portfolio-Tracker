@@ -24,6 +24,8 @@ import { WatchlistDialogComponent } from './components/watchlist-dialog/watchlis
 import { MatDialogModule } from '@angular/material/dialog';
 import { IpoCalendarComponent } from './components/home/ipo-calender/ipo-calender.component';
 import { MarketDashboardComponent } from './components/home/market-dashboard/market-dashboard.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -57,7 +59,9 @@ import { MarketDashboardComponent } from './components/home/market-dashboard/mar
       closeButton: true,    
       progressBar: true
     }),
-    MatDialogModule
+    MatDialogModule,
+    MatPaginatorModule,
+    MatTableModule
   ],
   providers: [
     {

@@ -22,7 +22,7 @@ export class WatchlistDialogComponent {
     }
   ) {
     this.isModalVisible = true;
-    console.log("in watchlist Dialog groupsWithStock : "+this.data.groupsWithStock);
+    // console.log("in watchlist Dialog groupsWithStock : "+this.data.groupsWithStock);
   }
 
   onClose(): void {

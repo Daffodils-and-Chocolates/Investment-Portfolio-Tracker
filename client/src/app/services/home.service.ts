@@ -41,4 +41,9 @@ export class HomeService {
     const url = `${this.baseUrl}/crypto/exchange?token=${this.token}`;
     return this.http.get(url);
   }
+
+  //get stock quote with high,low, previous close
+  getStockQuote(symbol : string) : Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/quote?symbol=${symbol}&token=${this.token}`);
+  }
 }

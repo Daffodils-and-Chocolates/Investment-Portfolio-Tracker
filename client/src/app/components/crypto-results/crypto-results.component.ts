@@ -10,9 +10,12 @@ import { SearchService } from '../../services/search.service';
 export class CryptoResultsComponent implements OnInit {
   results: any[] = [];
   loading = true;
+  filteredResults: any[] = [];
+  searchTerm: string = ''; 
   error: string | null = null;
   currentPage = 1;
-  itemsPerPage = 10;
+  itemsPerPage = 18;
+  pageRange = 5;
 
   constructor(
     private route: ActivatedRoute,
@@ -27,9 +30,10 @@ export class CryptoResultsComponent implements OnInit {
         this.searchService.getCryptoSymbols(exchange).subscribe({
           next: (data) => {
             this.results = data || [];
+            this.filteredResults = this.results;
             this.loading = false;
           },
-          error: (error) => {
+          error: () => {
             this.error =
               'An error occurred while fetching crypto symbols. Please try again.';
             this.loading = false;
@@ -41,11 +45,11 @@ export class CryptoResultsComponent implements OnInit {
 
   get paginatedResults() {
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.results.slice(start, start + this.itemsPerPage);
+    return this.filteredResults.slice(start, start + this.itemsPerPage); // Use filteredResults here
   }
 
   get totalPages() {
-    return Math.ceil(this.results.length / this.itemsPerPage);
+    return Math.ceil(this.filteredResults.length / this.itemsPerPage); // Use filteredResults for total pages
   }
 
   get pages() {
@@ -56,5 +60,19 @@ export class CryptoResultsComponent implements OnInit {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
     }
+  }
+
+  filterResults() {
+    if (this.searchTerm.trim() === '') {
+      this.filteredResults = this.results; // Show all if no search term
+    } else {
+      this.filteredResults = this.results.filter((result) =>
+        result.displaySymbol.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        result.description.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        result.symbol.toLowerCase().includes(this.searchTerm.toLowerCase())
+
+      );
+    }
+    this.currentPage = 1; // Reset to first page after search
   }
 }

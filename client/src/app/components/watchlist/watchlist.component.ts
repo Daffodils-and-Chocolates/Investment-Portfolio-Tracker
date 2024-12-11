@@ -1,32 +1,42 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { MarketUpdate, Stock } from '../../models/stock.interface';
 import { WatchlistService } from '../../services/watchlist.service';
 import { FinnhubService } from '../../services/finnhub.service';
+import { ManageAccountService } from '../../services/manage-account.service';
+import { HomeService } from '../../services/home.service';
 
 @Component({
   selector: 'app-watchlist',
   templateUrl: './watchlist.component.html',
   styleUrls: ['./watchlist.component.css']
 })
-export class WatchlistComponent implements OnInit, OnDestroy {
+export class WatchlistComponent implements OnInit, OnDestroy, AfterViewInit {
   private stocksSubject = new BehaviorSubject<Stock[]>([]);
   stocks$ = this.stocksSubject.asObservable();
   groupedStocks: { [key: string]: Stock[] } = {};
   groupNames: string[] = [];
   selectedGroup: string = 'All';
+  userName: string = '';
+  visibleEdit : boolean = false;
   private marketDataSubscription?: Subscription;
   private watchlistSubscription?: Subscription;
 
   constructor(
     private watchlistService: WatchlistService,
     private finnhubService: FinnhubService,
-    private http: HttpClient
+    private http: HttpClient,
+    private manageAccountService : ManageAccountService,
+    private homeService : HomeService
   ) {}
 
   ngOnInit(): void {
+    this.fetchUserName();
     this.fetchGroupNames();
+  }
+
+  ngAfterViewInit() : void{
     this.loadAllStocks();
   }
 
@@ -99,27 +109,87 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     this.watchlistSubscription = this.watchlistService.getAllStocks()
       .subscribe({
         next: (stocks) => {
-          this.stocksSubject.next(stocks);
-          this.setupMarketDataStream(stocks);
+          const validStocks = stocks ?? [];
+          this.stocksSubject.next(validStocks);
+          // console.log('Fetched stocks:', validStocks);  
+          this.setupMarketDataStream(validStocks);
+          validStocks.forEach(stock => this.updateStockPriceFromAPI(stock));
         },
         error: (error) => console.error('Error loading stocks:', error)
       });
   }
+  
 
   loadStocksByGroup(groupName: string) {
     this.selectedGroup = groupName;
-    
+  
     if (groupName === 'All') {
       this.loadAllStocks();
     } else {
       this.watchlistSubscription = this.watchlistService.getStocksByGroupName(groupName)
         .subscribe({
           next: (stocks) => {
-            this.groupedStocks[groupName] = stocks;
-            this.setupMarketDataStream(stocks);
+            const validStocks = stocks ?? [];
+            this.groupedStocks[groupName] = validStocks;
+            this.setupMarketDataStream(validStocks);
+            validStocks.forEach(stock => this.updateStockPriceFromAPI(stock));
           },
           error: (error) => console.error('Error fetching stocks by group:', error)
         });
     }
+  }  
+
+  fetchUserName(){
+    this.manageAccountService.getUserData().subscribe({
+      next : (response) => {
+        this.userName = response.name;
+      },
+      error: (err) => {
+        console.error('Error fetching userName', err);
+      }
+    })
   }
+
+  toggleEdit(){
+    this.visibleEdit = !this.visibleEdit;
+  }
+
+  private updateStockPriceFromAPI(stock: Stock): void {
+    this.homeService.getStockQuote(stock.symbol).subscribe({
+      next: (quote) => {
+        const updatedStock = {
+          ...stock,
+          price: quote.c,
+          change: quote.d,
+          percentChange: quote.dp,
+          highPrice: quote.h,
+          lowPrice: quote.l,
+          openPrice: quote.o,
+          previousClosePrice: quote.pc
+        };
+  
+        this.updateStockInList(updatedStock);
+  
+        Object.keys(this.groupedStocks).forEach(groupName => {
+          if (this.groupedStocks[groupName]) {
+            this.groupedStocks[groupName] = this.groupedStocks[groupName].map(groupStock =>
+              groupStock.symbol === updatedStock.symbol ? updatedStock : groupStock
+            );
+          }
+        });
+      },
+      error: (error) => {
+        console.error(`Error fetching price for ${stock.symbol}:`, error);
+      }
+    });
+  }
+  
+  private updateStockInList(updatedStock: Stock): void {
+    const currentStocks = this.stocksSubject.value;
+    const updatedStocks = currentStocks.map(stock => 
+      stock.symbol === updatedStock.symbol ? updatedStock : stock
+    );
+    this.stocksSubject.next(updatedStocks);
+  }
+  
 }

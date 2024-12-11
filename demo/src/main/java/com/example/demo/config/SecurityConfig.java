@@ -16,7 +16,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
@@ -30,20 +29,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS with custom config
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Use stateless sessions
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(
-//                                "/auth/**",               // Allow unauthenticated access to auth endpoints
-//                                "/swagger-ui/**",                  // Allow unauthenticated access to Swagger UI
-//                                "/v3/api-docs/**",                 // Allow unauthenticated access to OpenAPI docs
-//                                "/swagger-resources/**",           // Allow access to Swagger resources
-//                                "/webjars/**"                      // Allow access to webjars for Swagger UI
-//                        ).permitAll()
-//                        .anyRequest().authenticated() // Authenticate all other requests
-                                .requestMatchers("/ws/**").permitAll()
-                                .anyRequest().permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/ws/**",
+                                "/api/finnhub/**"
+                        ).permitAll()
+                        .anyRequest().authenticated() // Authenticate all other requests
+//                        .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

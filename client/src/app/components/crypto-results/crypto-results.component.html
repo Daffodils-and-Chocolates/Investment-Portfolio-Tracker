@@ -16,20 +16,42 @@
 
     <div *ngIf="results.length > 0">
       <h2>Crypto Symbols</h2>
-      <div class="row row-cols-1 row-cols-md-3 g-4">
+      <!-- <div class="row row-cols-1 row-cols-md-3 g-4">
         <div class="col" *ngFor="let result of paginatedResults">
           <div class="card h-100">
             <div class="card-body">
               <h5 class="card-title">{{ result.displaySymbol }}</h5>
               <p class="card-text">{{ result.description }}</p>
-              <p class="card-text">
-                <small class="text-muted">Symbol: {{ result.symbol }}</small>
-              </p>
+              <app-watchlist-button [stock] = "result"></app-watchlist-button>
             </div>
           </div>
         </div>
+      </div> -->
+      <div class="mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search crypto symbols"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="filterResults()"
+        />
+      </div>
+           <div class="list-group m-5">
+        <div *ngFor="let result of paginatedResults" class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="mb-1">{{ result.displaySymbol }}</h5>
+          </div>
+          <div>
+            <p class="mb-1">{{ result.description }}</p>
+          </div>
+          <div>
+            <p class="mb-1">{{ result.symbol }}</p>
+          </div>
+          <app-watchlist-button [stock]="result"></app-watchlist-button>
+        </div>
       </div>
 
+      <!-- Pagination -->
       <nav class="mt-4">
         <ul class="pagination justify-content-center">
           <li class="page-item" [class.disabled]="currentPage === 1">

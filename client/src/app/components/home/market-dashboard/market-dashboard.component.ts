@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HomeService } from '../../../services/home.service';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-market-dashboard',
@@ -18,12 +20,24 @@ export class MarketDashboardComponent implements OnInit {
 
   newsCategories = [3,5,8]; // Options for items per page
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  newsDataSource = new MatTableDataSource<any>();
+  
   constructor(private homeService: HomeService) {}
 
   ngOnInit(): void {
     this.loadMarketStatus();
     this.loadMarketHolidays();
     this.loadMarketNews();
+  }
+
+  ngAfterViewInit(): void {
+    if (this.paginator) {
+      this.newsDataSource.paginator = this.paginator;
+    } else {
+      console.error('Paginator is undefined');
+      console.log('Paginator is undefined in ngAfterViewINit');
+    }
   }
 
   // Fetch market status
@@ -55,6 +69,11 @@ export class MarketDashboardComponent implements OnInit {
     this.homeService.getNews(this.activeGroup).subscribe(
       (data) => {
         this.marketNews = data;
+        this.newsDataSource.data = this.marketNews;
+        if (this.paginator) {
+          this.newsDataSource.paginator = this.paginator;
+          this.paginator.firstPage();
+        }
       },
       (err) => {
         console.error('Error fetching market news', err);
@@ -62,35 +81,11 @@ export class MarketDashboardComponent implements OnInit {
     );
   }
 
-
   changeNewsGroup(group: string): void {
     this.activeGroup = group;
     this.loadMarketNews();
-  }
-
-  // Get paginated news
-  get paginatedNews(): any[] {
-    const start = (this.currentPage - 1) * this.newsPerPage;
-    return this.marketNews.slice(start, start + this.newsPerPage);
-  }
-
-  // Calculate the number of pages
-  get totalPages(): number[] {
-    if (!this.marketNews.length) {
-      return [];
+    if (this.paginator) {
+      this.paginator.firstPage();
     }
-    const total = Math.floor(this.marketNews.length / this.newsPerPage) + (this.marketNews.length % this.newsPerPage ? 1 : 0);
-    return Array.from({ length: total }, (_, i) => i + 1);
-  }
-
-  // Handle pagination change
-  changePage(page: number): void {
-    this.currentPage = page;
-  }
-
-  // Handle change in number of news items per page
-  changeNewsPerPage(count: number): void {
-    this.newsPerPage = count;
-    this.currentPage = 1; // Reset to the first page
   }
 }

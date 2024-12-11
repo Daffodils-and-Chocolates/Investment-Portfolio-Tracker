@@ -8,35 +8,70 @@
       [(ngModel)]="selectedGroup"
       (change)="loadStocksByGroup(selectedGroup)"
     >
-      <option value="All">All</option>
-      <option *ngFor="let group of groupNames" [value]="group">{{ group }}</option>
+      <option value="All">{{ userName }}'s List</option>
+      <option *ngFor="let group of groupNames" [value]="group">
+        {{ group }}
+      </option>
     </select>
+    <div>
+      <button class="btn-primary mx-5 p-2" (click)="toggleEdit()">Edit</button>
+    </div>
   </div>
 
   <!-- Stocks Table -->
   <div *ngIf="selectedGroup === 'All'; else groupedView">
-    <div *ngIf="stocks$ | async as stocks; else noData">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Stock Symbol</th>
-            <th>Price</th>
-            <th>Volume</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let stock of stocks; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td>{{ stock.symbol }}</td>
-            <td>{{ stock.price | currency }}</td>
-            <td>{{ stock.volume | number:'1.5-5' }}</td>
-            <td><app-watchlist-button [stock]="stock"></app-watchlist-button></td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- <div *ngIf="(stocks$ | async)?.length > 0; else noData">     -->
+    <div *ngIf="stocks$ | async as stocks">
+      <div *ngIf="stocks.length > 0; else noData">
+        <!-- <pre>{{ (stocks$ | async) | json }}</pre>   -->
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stock Symbol</th>
+              <th>Price</th>
+              <th>Volume</th>
+              <th *ngIf="visibleEdit"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stock of stocks; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ stock.symbol }}</td>
+              <td [ngStyle]="{ color: stock.change < 0 ? 'red' : 'green' }">
+                {{ stock.price ? (stock.price | currency) : "Loading..." }}
+              </td>
+              <!-- Show price or loading -->
+              <td>
+                {{
+                  stock.volume
+                    ? (stock.volume | number : "1.5-5")
+                    : "Processing...."
+                }}
+              </td>
+              <td *ngIf="visibleEdit">
+                <app-watchlist-button [stock]="stock"></app-watchlist-button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+
+  <!-- <div class="right-panel" [class.open]="isPanelOpen">
+    <div class="panel-header">
+      <h5>Stock Details</h5>
+      <button class="btn btn-close" (click)="closePanel()">x</button>
+    </div>
+    <div *ngIf="selectedStock">
+      <p><strong>Symbol:</strong> {{ selectedStock.symbol }}</p>
+      <p><strong>Price:</strong> {{ selectedStock.price | currency }}</p>
+      <p><strong>Volume:</strong> {{ selectedStock.volume | number }}</p>
+      <p><strong>Change:</strong> {{ selectedStock.change | number }}</p>
+      <p><strong>Percent Change:</strong> {{ selectedStock.percentChange | number }}%</p>
+    </div>
+  </div> -->
 
   <!-- Grouped Stocks -->
   <ng-template #groupedView>
@@ -48,15 +83,27 @@
             <th>Stock Symbol</th>
             <th>Price</th>
             <th>Volume</th>
+            <th *ngIf="visibleEdit"></th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let stock of groupedStocks[selectedGroup]; let i = index">
             <td>{{ i + 1 }}</td>
             <td>{{ stock.symbol }}</td>
-            <td>{{ stock.price | currency }}</td>
-            <td>{{ stock.volume | number:'1.5-5' }}</td>
-            <td><app-watchlist-button [stock]="stock"></app-watchlist-button></td>
+            <td [ngStyle]="{ color: stock.change < 0 ? 'red' : 'green' }">
+              {{ stock.price ? (stock.price | currency) : "Loading..." }}
+            </td>
+            <!-- Show price or loading -->
+            <td>
+              {{
+                stock.volume
+                  ? (stock.volume | number : "1.5-5")
+                  : "Processing...."
+              }}
+            </td>
+            <td *ngIf="visibleEdit">
+              <app-watchlist-button [stock]="stock"></app-watchlist-button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -66,7 +113,7 @@
   <!-- No Data Template -->
   <ng-template #noData>
     <p class="text-center text-muted">
-      No stock data available. Please wait...
+      No stock data available. Please add stocks to the list!
     </p>
   </ng-template>
 </div>

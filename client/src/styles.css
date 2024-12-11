@@ -31,6 +31,15 @@
   background-color: var(--accent-color-blue) !important;
 }
 
-      /* .btn-primary:focus {
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5) !important;
-      } */
+.cdk-overlay-container {
+  position: fixed;
+  z-index: 1050; /* Higher than Bootstrap modal */
+}
+
+.mat-mdc-paginator-icon {
+  fill: white !important;
+}
+
+.mat-mdc-paginator-navigation-button[aria-disabled="true"] .mat-mdc-paginator-icon {
+  fill: rgba(255, 255, 255, 0.656) !important;
+}

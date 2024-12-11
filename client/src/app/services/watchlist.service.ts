@@ -18,7 +18,9 @@ export class WatchlistService {
 
   private loadUserStocks() {
     this.getAllStocks().subscribe({
-      next: (stocks) => this.watchlistStocksSubject.next(stocks),
+      next: (stocks) => {
+        this.watchlistStocksSubject.next(stocks ?? []);
+      },
       error: (error) => console.error('Error loading watchlist stocks:', error),
     });
   }
@@ -28,12 +30,12 @@ export class WatchlistService {
   }
 
   getStocksByGroupName(groupName: string): Observable<Stock[]> {
-    return this.http.get<Stock[]>(`${this.apiUrl}/user/${groupName}`);
+    return this.http.get<Stock[]>(`${this.apiUrl}/user/${encodeURIComponent(groupName)}`);
   }
 
   addStocksToGroup(groupName: string, stocks: Stock[]): Observable<Stock[]> {
     return this.http.post<Stock[]>(
-      `${this.apiUrl}/${groupName}/add-stocks`,
+      `${this.apiUrl}/${encodeURIComponent(groupName)}/add-stocks`,
       stocks
     );
   }
@@ -51,7 +53,7 @@ export class WatchlistService {
             completedRequests++;
   
             if (completedRequests === stocks.length) {
-              this.http.delete<Stock[]>(`${this.apiUrl}/${groupName}/remove-stocks`, {
+              this.http.delete<Stock[]>(`${this.apiUrl}/${encodeURIComponent(groupName)}/remove-stocks`, {
                   body: stockIds,
                 })
                 .subscribe({

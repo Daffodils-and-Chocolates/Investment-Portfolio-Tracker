@@ -7,7 +7,6 @@ import com.example.demo.models.entity.User;
 import com.example.demo.service.AuthService;
 import com.example.demo.service.UserService;
 import com.example.demo.util.JwtService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,9 +19,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-    private final UserService userService;  // Assuming UserService handles user CRUD operations
+    private final UserService userService;
 
-    @Autowired
     public AuthServiceImpl(AuthenticationManager authenticationManager, JwtService jwtService, UserDetailsService userDetailsService, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
@@ -51,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     public SignUpResponseDto signup(SignUpUserDto signUpUserDto) {
         User newUser = new User();
         newUser.setEmail(signUpUserDto.getEmail());
-        newUser.setPassword(signUpUserDto.getPassword());  // Assuming password encryption handled in UserService
+        newUser.setPassword(signUpUserDto.getPassword());
         newUser.setName(signUpUserDto.getName());
         userService.createUser(newUser);
         return new SignUpResponseDto(jwtService.generateToken(newUser), newUser,null);

@@ -4,6 +4,13 @@ export interface Stock {
   description: string;
   type: string;
   currency: string;
+  price?: number;
+  change?: number;
+  percentChange?: number;
+  highPrice?: number;
+  lowPrice?: number;
+  openPrice?: number;
+  previousClosePrice?: number;
 }
 
 export interface WatchlistGroup {

@@ -6,7 +6,7 @@ import { retry, catchError } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class FinnhubService {
-  private baseUrl = 'http://localhost:5000/api/finnhub'; // Update this to match your backend port
+  private baseUrl = 'http://localhost:5000/api/finnhub';
   private eventSource: EventSource | null = null;
 
   constructor() {}

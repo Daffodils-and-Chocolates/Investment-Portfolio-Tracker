@@ -14,7 +14,14 @@ export class AuthInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     const token = localStorage.getItem('token');
-    if (token) {
+
+    const excludedUrls = [
+      /^https:\/\/finnhub\.io\/api\/v1\/.*/,
+    ];
+
+    const isExcluded = excludedUrls.some((pattern) => pattern.test(req.url));
+    
+    if (token && !isExcluded) {
       req = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`,

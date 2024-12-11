@@ -53,10 +53,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     }
                 }
             }
-
             filterChain.doFilter(request, response);
         } catch (ServletException e) {
-            // Log or handle the exception here
             handlerExceptionResolver.resolveException(request, response, null, e);
         }
     }

@@ -1,9 +1,10 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Stock, WatchlistRequestDto } from '../../models/stock.interface';
 import { MatDialog } from '@angular/material/dialog';
-import { Subscription } from 'rxjs';
+import { catchError, forkJoin, of, Subscription, switchMap, tap } from 'rxjs';
 import { WatchlistService } from '../../services/watchlist.service';
 import { WatchlistDialogComponent } from '../watchlist-dialog/watchlist-dialog.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-watchlist-button',
@@ -24,7 +25,8 @@ export class WatchlistButtonComponent implements OnInit, OnDestroy {
 
   constructor(
     private watchlistService: WatchlistService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private toastr : ToastrService
   ) {}
 
   ngOnInit() {
@@ -49,48 +51,63 @@ export class WatchlistButtonComponent implements OnInit, OnDestroy {
   openWatchlistDialog() {
     this.loading = true;
     this.error = '';
-
-    //get group names associated with the user
-    this.watchlistService.getGroupNames().subscribe({
-      next: (names) => {
-        this.groupNames = names;
+  
+    // Fetch user's watchlist group names (always needed)
+    const groupNames$ = this.watchlistService.getGroupNames().pipe(
+      tap((names) => (this.groupNames = names))
+    );
+  
+    // Handle isInWatchlist logic
+    let stockRequests$;
+    if (this.isInWatchlist) {
+      // Fetch stockId if missing
+      const stockId$ = !this.stock.stockId
+        ? this.watchlistService.getStockBySymbol(this.stock.symbol).pipe(
+            tap((response) => (this.stock.stockId = response.stockId)),
+            catchError(() => {
+              this.error = 'Error finding the stock ID';
+              return of(null); // Return an empty observable to avoid breaking the flow
+            })
+          )
+        : of(null); // If stockId exists, no need to fetch it
+  
+      // Fetch groups containing the stock
+      const groupsWithStock$ = stockId$.pipe(
+        switchMap(() => {
+          if (this.stock.stockId) {
+            return this.watchlistService.getGroupNamesByStock(this.stock.stockId).pipe(
+              tap((response) => (this.groupsWithStock = response)),
+              catchError((err) => {
+                this.error += '\nCould not get groups associated with the stock.\n' + err;
+                return of(null); // Return an empty observable
+              })
+            );
+          }
+          return of(null);
+        })
+      );
+  
+      // Combine stock-related requests
+      stockRequests$ = forkJoin([stockId$, groupsWithStock$]);
+    } else {
+      stockRequests$ = of(null); // If not in watchlist, skip stock-related requests
+    }
+  
+    // Combine all requests
+    forkJoin([groupNames$, stockRequests$]).subscribe({
+      next: () => {
         this.loading = false;
-        this.openDialog();
+        this.openDialog(); // Open dialog after all requests are handled
       },
       error: (err) => {
-        this.error = 'Failed to load watchlist groups';
+        this.error = 'An error occurred while loading watchlist information.\n' + err.error.message;
+        console.log("simran threw this error\n"+ JSON.stringify(err));
         this.loading = false;
-        console.error('Error loading groups:', err);
         this.openDialog();
       },
     });
-
-    // only do this step if isInWatchlist
-    if (this.isInWatchlist) {
-      //if stock doesnt have stockId i.e. from the search not the watchlist ; then get stock id first
-      if (!this.stock.stockId) {
-        this.watchlistService.getStockBySymbol(this.stock.symbol).subscribe({
-          next: (response) => {
-            console.log("response recieved in getStockBySymbol in watchlist-button is " + response);
-            this.stock.stockId = response.stockId;
-          },
-          error: () => {
-            console.log('Error in finidng the stock in a group');
-            this.error = 'Error in finidng the stock in a group';
-          },
-        });
-      }
-      //get groups that contain this stock
-      this.watchlistService.getGroupNamesByStock(this.stock.stockId).subscribe({
-        next: (response) =>{
-          this.groupsWithStock = response;
-        },
-        error: (err) =>{
-          this.error = this.error + "\nCould not get groups associated with a stock.\n"+ err;
-        }
-      })
-    }
   }
+  
 
   private openDialog() {
     const dialogRef = this.dialog.open(WatchlistDialogComponent, {
@@ -142,11 +159,13 @@ export class WatchlistButtonComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.watchlistService.refreshWatchlist();
         this.currentGroupName = groupName;
+        this.toastr.success("Added successfully to \""+this.currentGroupName+"\"");
       },
       error: (err) => {
         this.error = 'Failed to add to watchlist';
         this.loading = false;
         console.error('Error adding to watchlist:', err);
+        this.toastr.error("Error adding to \""+this.currentGroupName+"\".Please try again later.");
       },
     });
   }
@@ -157,9 +176,13 @@ export class WatchlistButtonComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.watchlistService.refreshWatchlist();
+          this.groupsWithStock = null;
+          this.stock.stockId = null;
+          this.toastr.success("Removed successfully from \""+this.currentGroupName+"\"");
         },
         error: (err) => {
           console.error('Error removing from watchlist:', err);
+          this.toastr.error("Error removing from \""+this.currentGroupName+"\".Please try again later.");
         },
       });
   }
