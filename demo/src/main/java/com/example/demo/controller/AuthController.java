@@ -6,9 +6,9 @@ import com.example.demo.models.dtos.authDto.SignUpUserDto;
 import com.example.demo.models.dtos.authDto.SignUpResponseDto;
 import com.example.demo.service.AuthService;
 import com.example.demo.util.JwtService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,7 +20,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponseDto> signup(@RequestBody SignUpUserDto signUpUserDto) {
+    public ResponseEntity<SignUpResponseDto> signup(@RequestBody @Valid SignUpUserDto signUpUserDto) {
         // Call AuthService to handle user registration
         SignUpResponseDto signup = authService.signup(signUpUserDto);
 
@@ -33,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginUserDto loginUserDto) {
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginUserDto loginUserDto) {
         // Authenticate the user using AuthService
         String jwtToken = authService.login(loginUserDto);
 
@@ -45,10 +45,9 @@ public class AuthController {
         return ResponseEntity.ok(loginResponse);
     }
 
-    // Add a token validation endpoint if you want to validate JWT tokens directly.
-    @PostMapping("/validate-token")
-    public ResponseEntity<Boolean> validateToken(@RequestParam("token") String token, @RequestBody UserDetails userDetails) {
-        boolean isValid = authService.validateToken(token, userDetails);
-        return ResponseEntity.ok(isValid);
-    }
+//    @PostMapping("/validate-token")
+//    public ResponseEntity<Boolean> validateToken(@RequestParam("token") String token, @RequestBody UserDetails userDetails) {
+//        boolean isValid = authService.validateToken(token, userDetails);
+//        return ResponseEntity.ok(isValid);
+//    }
 }

@@ -71,7 +71,6 @@ export class WatchlistService {
     });
   }
   
-  
   isStockInWatchlist(symbol: string): boolean {
     const stocks = this.watchlistStocksSubject.value;
     return stocks.some((stock) => stock.symbol === symbol);
@@ -100,6 +99,12 @@ export class WatchlistService {
   getGroupNamesByStock(stockId : number ): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/stocks/groups`,{
       params: {stockId}
+    });
+  }
+
+  updateGroupName(groupName : string, changeToGroupName : string): Observable<any>{
+    return this.http.put<any>(`http://localhost:5000/api/watchlist-groups/${encodeURIComponent(groupName)}`,{
+        groupName : changeToGroupName
     });
   }
 

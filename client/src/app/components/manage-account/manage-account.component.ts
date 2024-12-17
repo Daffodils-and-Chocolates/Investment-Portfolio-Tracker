@@ -60,7 +60,9 @@ export class ManageAccountComponent implements OnInit {
           this.loadUserData();
         },
         error: (error) => {
-          this.toastrService.error('Failed to update account. Please try again.');
+          // this.toastrService.error('Failed to update account. Please try again.');
+          this.toastrService.error(error.error.description);
+          console.log(error);
         }
       });
     }

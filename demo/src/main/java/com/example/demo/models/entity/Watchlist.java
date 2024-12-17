@@ -32,7 +32,7 @@ public class Watchlist {
     private Stock stock;
 
     @ManyToOne
-    @JoinColumn(name = "group_name")
+    @JoinColumn(name = "group_id")
     private WatchlistGroup group;
 
     @CreationTimestamp

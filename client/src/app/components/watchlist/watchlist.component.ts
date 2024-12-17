@@ -6,6 +6,7 @@ import { WatchlistService } from '../../services/watchlist.service';
 import { FinnhubService } from '../../services/finnhub.service';
 import { ManageAccountService } from '../../services/manage-account.service';
 import { HomeService } from '../../services/home.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-watchlist',
@@ -20,6 +21,8 @@ export class WatchlistComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedGroup: string = 'All';
   userName: string = '';
   visibleEdit : boolean = false;
+  tempGroupName : string = this.selectedGroup;
+  changingGroupName : boolean = false;
   private marketDataSubscription?: Subscription;
   private watchlistSubscription?: Subscription;
 
@@ -28,12 +31,14 @@ export class WatchlistComponent implements OnInit, OnDestroy, AfterViewInit {
     private finnhubService: FinnhubService,
     private http: HttpClient,
     private manageAccountService : ManageAccountService,
-    private homeService : HomeService
+    private homeService : HomeService,
+    private toastr : ToastrService
   ) {}
 
   ngOnInit(): void {
     this.fetchUserName();
     this.fetchGroupNames();
+    // console.log("ngOnInit  :- selectedGroup : "+ this.selectedGroup + "; tempGroupName : "+ this.tempGroupName);
   }
 
   ngAfterViewInit() : void{
@@ -122,7 +127,8 @@ export class WatchlistComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loadStocksByGroup(groupName: string) {
     this.selectedGroup = groupName;
-  
+    this.tempGroupName = groupName;
+    // console.log("loadStocksByGroup  :- selectedGroup : "+ this.selectedGroup + "; tempGroupName : "+ this.tempGroupName);
     if (groupName === 'All') {
       this.loadAllStocks();
     } else {
@@ -190,6 +196,32 @@ export class WatchlistComponent implements OnInit, OnDestroy, AfterViewInit {
       stock.symbol === updatedStock.symbol ? updatedStock : stock
     );
     this.stocksSubject.next(updatedStocks);
+  }
+
+  onTempGroupNameChange(groupName: string) {
+    this.changingGroupName = true;
+  }
+
+  onSavingGroupName(saving: boolean) {
+    if(saving){
+      this.saveGroupName();
+    }
+    this.visibleEdit = false;
+    this.changingGroupName = false;
+    // console.log("on sAVINGgroup change in temp group change!!!");
+  }
+
+  saveGroupName() {
+    this.watchlistService.updateGroupName(this.selectedGroup, this.tempGroupName).subscribe({
+      next: (response) => {
+        this.tempGroupName = this.selectedGroup;
+        this.fetchGroupNames();
+        this.toastr.success('Group name saved successfully!', 'Success');
+      },
+      error: (error) => {
+        console.error('Error saving group name:', error);
+      }
+    })
   }
   
 }

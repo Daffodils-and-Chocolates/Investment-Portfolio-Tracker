@@ -1,6 +1,7 @@
 package com.example.demo.implementation;
 
 import com.example.demo.exception.EntityNotFoundException;
+import com.example.demo.exception.InvalidPasswordException;
 import com.example.demo.models.dtos.userDto.GetUserDto;
 import com.example.demo.models.dtos.userDto.UpdateUserRequestDto;
 import com.example.demo.models.entity.User;
@@ -63,7 +64,7 @@ public class UserServiceImpl implements UserService {
                 authenticatedUser.setPassword(passwordService.encode(userUpdates.getNewPassword()));
             }
             else{
-                throw new RuntimeException("Invalid Password!");
+                throw new InvalidPasswordException();
             }
         }
         authenticatedUser.setUpdatedAt(LocalDateTime.now());

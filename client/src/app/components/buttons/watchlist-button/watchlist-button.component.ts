@@ -1,10 +1,10 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Stock, WatchlistRequestDto } from '../../models/stock.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { catchError, forkJoin, of, Subscription, switchMap, tap } from 'rxjs';
-import { WatchlistService } from '../../services/watchlist.service';
-import { WatchlistDialogComponent } from '../watchlist-dialog/watchlist-dialog.component';
 import { ToastrService } from 'ngx-toastr';
+import { Stock, WatchlistRequestDto } from '../../../models/stock.interface';
+import { WatchlistService } from '../../../services/watchlist.service';
+import { WatchlistDialogComponent } from '../watchlist-dialog/watchlist-dialog.component';
 
 @Component({
   selector: 'app-watchlist-button',
@@ -137,6 +137,7 @@ export class WatchlistButtonComponent implements OnInit, OnDestroy {
           next: (response) => {
             console.log('Created new watchlist entry:', response);
             this.watchlistService.refreshWatchlist();
+            this.toastr.success("Group created successfully and stock added to \""+result.groupName+"\"");
           },
           error: (err) => {
             console.error('Error creating watchlist entry:', err);

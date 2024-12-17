@@ -12,7 +12,8 @@ import java.util.List;
 public interface WatchlistRepository extends JpaRepository<Watchlist, Long> {
 
     @Query("SELECT w.stock FROM Watchlist w " +
-            "WHERE w.user.userId = :userId AND w.group.groupName = :groupName")
+            "WHERE w.user.userId = :userId AND w.group.groupId = " +
+            "(SELECT g.groupId FROM WatchlistGroup g WHERE g.groupName = :groupName)")
     List<Stock> findStocksByUserIdAndGroupName(@Param("userId") Long userId, @Param("groupName") String groupName);
 
     @Query("SELECT w.stock FROM Watchlist w WHERE w.user.userId = :userId")

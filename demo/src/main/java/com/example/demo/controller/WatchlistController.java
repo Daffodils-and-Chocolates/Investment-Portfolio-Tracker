@@ -27,17 +27,17 @@ public class WatchlistController {
         return watchlistService.createWatchlist(watchlist, user);
     }
 
-    @Operation(summary = "Retrieve a watchlist entry by ID", description = "Fetch a specific stock...")
-    @GetMapping("/{id}")
-    public WatchlistResponseDto getWatchlistEntryById(@PathVariable Long id) {
-        return watchlistService.getWatchlistById(id);
-    }
+//    @Operation(summary = "Retrieve a watchlist entry by ID", description = "Fetch a specific stock...")
+//    @GetMapping("/{id}")
+//    public WatchlistResponseDto getWatchlistEntryById(@PathVariable Long id) {
+//        return watchlistService.getWatchlistById(id);
+//    }
 
-    @Operation(summary = "Get all stocks in the watchlist", description = "This endpoint retrieves all stocks...")
-    @GetMapping
-    public List<WatchlistResponseDto> getAllWatchlistEntries() {
-        return watchlistService.getAllWatchlists();
-    }
+//    @Operation(summary = "Get all stocks in the watchlist", description = "This endpoint retrieves all stocks...")
+//    @GetMapping
+//    public List<WatchlistResponseDto> getAllWatchlistEntries() {
+//        return watchlistService.getAllWatchlists();
+//    }
 
     @Operation(
             summary = "Get all stocks for a user",
@@ -58,17 +58,17 @@ public class WatchlistController {
         return watchlistService.getStocksByUserIdAndGroupName(user.getUserId(), groupName);
     }
 
-    @Operation(summary = "Update a watchlist entry by ID", description = "This endpoint allows the user to update an existing...")
-    @PutMapping("/{id}")
-    public WatchlistResponseDto updateWatchlistEntry(@PathVariable Long id, @RequestBody WatchlistRequestDto watchlist) {
-        return watchlistService.updateWatchlist(id, watchlist);
-    }
+//    @Operation(summary = "Update a watchlist entry by ID", description = "This endpoint allows the user to update an existing...")
+//    @PutMapping("/{id}")
+//    public WatchlistResponseDto updateWatchlistEntry(@PathVariable Long id, @RequestBody WatchlistRequestDto watchlist) {
+//        return watchlistService.updateWatchlist(id, watchlist);
+//    }
 
-    @Operation(summary = "Delete a watchlist entry by ID", description = "This operation deletes...")
-    @DeleteMapping("/{id}")
-    public void deleteWatchlistEntry(@PathVariable Long id) {
-        watchlistService.deleteWatchlist(id);
-    }
+//    @Operation(summary = "Delete a watchlist entry by ID", description = "This operation deletes...")
+//    @DeleteMapping("/{id}")
+//    public void deleteWatchlistEntry(@PathVariable Long id) {
+//        watchlistService.deleteWatchlist(id);
+//    }
 
     @Operation(summary = "Add stocks to a group", description = "Allows a user to add multiple stocks to a specified watchlist group...")
     @PostMapping("/{groupName}/add-stocks")

@@ -20,26 +20,26 @@ public class WatchlistGroupController {
     @Autowired
     private WatchlistGroupService watchlistGroupService;
 
-    @PostMapping
-    @Operation(summary = "Create a new watchlist group", description = "Adds a new watchlist group to the database.")
-    public ResponseEntity<WatchlistGroup> createWatchlistGroup(@RequestBody WatchlistGroup watchlistGroup) {
-        WatchlistGroup createdGroup = watchlistGroupService.createWatchlistGroup(watchlistGroup);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdGroup);
-    }
-
-    @GetMapping("/{groupName}")
-    @Operation(summary = "Get a watchlist group by name", description = "Fetches a watchlist group by its unique name.")
-    public ResponseEntity<WatchlistGroup> getWatchlistGroupByName(@PathVariable String groupName) {
-        WatchlistGroup watchlistGroup = watchlistGroupService.getWatchlistGroupByName(groupName);
-        return ResponseEntity.ok(watchlistGroup);
-    }
-
-    @GetMapping
-    @Operation(summary = "Get all watchlist groups", description = "Retrieves all watchlist groups from the database.")
-    public ResponseEntity<List<WatchlistGroup>> getAllWatchlistGroups() {
-        List<WatchlistGroup> watchlistGroups = watchlistGroupService.getAllWatchlistGroups();
-        return ResponseEntity.ok(watchlistGroups);
-    }
+//    @PostMapping
+//    @Operation(summary = "Create a new watchlist group", description = "Adds a new watchlist group to the database.")
+//    public ResponseEntity<WatchlistGroup> createWatchlistGroup(@RequestBody WatchlistGroup watchlistGroup) {
+//        WatchlistGroup createdGroup = watchlistGroupService.createWatchlistGroup(watchlistGroup);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(createdGroup);
+//    }
+//
+//    @GetMapping("/{groupName}")
+//    @Operation(summary = "Get a watchlist group by name", description = "Fetches a watchlist group by its unique name.")
+//    public ResponseEntity<WatchlistGroup> getWatchlistGroupByName(@PathVariable String groupName) {
+//        WatchlistGroup watchlistGroup = watchlistGroupService.getWatchlistGroupByName(groupName);
+//        return ResponseEntity.ok(watchlistGroup);
+//    }
+//
+//    @GetMapping
+//    @Operation(summary = "Get all watchlist groups", description = "Retrieves all watchlist groups from the database.")
+//    public ResponseEntity<List<WatchlistGroup>> getAllWatchlistGroups() {
+//        List<WatchlistGroup> watchlistGroups = watchlistGroupService.getAllWatchlistGroups();
+//        return ResponseEntity.ok(watchlistGroups);
+//    }
 
     @PutMapping("/{groupName}")
     @Operation(summary = "Update a watchlist group by name", description = "Updates the details of an existing watchlist group.")
@@ -50,12 +50,12 @@ public class WatchlistGroupController {
         return ResponseEntity.ok(updatedGroup);
     }
 
-    @DeleteMapping("/{groupName}")
-    @Operation(summary = "Delete a watchlist group by name", description = "Removes a watchlist group from the database by its unique name.")
-    public ResponseEntity<Void> deleteWatchlistGroup(@PathVariable String groupName) {
-        watchlistGroupService.deleteWatchlistGroup(groupName);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/{groupName}")
+//    @Operation(summary = "Delete a watchlist group by name", description = "Removes a watchlist group from the database by its unique name.")
+//    public ResponseEntity<Void> deleteWatchlistGroup(@PathVariable String groupName) {
+//        watchlistGroupService.deleteWatchlistGroup(groupName);
+//        return ResponseEntity.noContent().build();
+//    }
 
     @PostMapping("/{groupName}/stocks")
     @Operation(summary = "Add stocks to a watchlist group", description = "Associates stocks with an existing watchlist group by its name.")

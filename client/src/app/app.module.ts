@@ -19,13 +19,14 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
 import { SymbolResultsComponent } from './components/symbol-results/symbol-results.component';
 import { CompanyProfileComponent } from './components/company-profile/company-profile.component';
 import { CryptoResultsComponent } from './components/crypto-results/crypto-results.component';
-import { WatchlistButtonComponent } from './components/watchlist-button/watchlist-button.component';
-import { WatchlistDialogComponent } from './components/watchlist-dialog/watchlist-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { IpoCalendarComponent } from './components/home/ipo-calender/ipo-calender.component';
 import { MarketDashboardComponent } from './components/home/market-dashboard/market-dashboard.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { ScrollToTopComponent } from './components/buttons/scroll-to-top/scroll-to-top.component';
+import { WatchlistButtonComponent } from './components/buttons/watchlist-button/watchlist-button.component';
+import { WatchlistDialogComponent } from './components/buttons/watchlist-dialog/watchlist-dialog.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { MatTableModule } from '@angular/material/table';
     WatchlistButtonComponent,
     WatchlistDialogComponent,
     IpoCalendarComponent,
-    MarketDashboardComponent
+    MarketDashboardComponent,
+    ScrollToTopComponent
   ],
   imports: [
     BrowserModule,

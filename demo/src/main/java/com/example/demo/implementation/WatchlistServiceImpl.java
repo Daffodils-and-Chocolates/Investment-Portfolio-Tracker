@@ -83,8 +83,6 @@ public class WatchlistServiceImpl implements WatchlistService {
         return WatchlistDtoMapper.toWatchlistResponseDto(updatedWatchlist);
     }
 
-
-
     @Override
     @Transactional
     public void deleteWatchlist(Long id) {

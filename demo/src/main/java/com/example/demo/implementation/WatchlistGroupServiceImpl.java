@@ -45,8 +45,7 @@ public class WatchlistGroupServiceImpl implements WatchlistGroupService {
     @Override
     public WatchlistGroup updateWatchlistGroup(String groupName, WatchlistGroup watchlistGroupDetails) {
         WatchlistGroup watchlistGroup = getWatchlistGroupByName(groupName);
-
-        // Updating group description (group name updates typically not allowed)
+        watchlistGroup.setGroupName(watchlistGroupDetails.getGroupName());
         watchlistGroup.setGroupDescription(watchlistGroupDetails.getGroupDescription());
         return watchlistGroupRepository.save(watchlistGroup);
     }

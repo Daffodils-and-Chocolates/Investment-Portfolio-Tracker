@@ -20,13 +20,12 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-
     @Id
-    @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
+    @NotNull
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 

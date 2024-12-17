@@ -10,7 +10,6 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class LoginComponent {
   loginData = { email: '', password: '' };
-  errorMessage: string | null = null;
   passwordVisible = false;        
 
   constructor(private authService: AuthService, private router: Router,private toastr  : ToastrService) {}
@@ -23,14 +22,13 @@ export class LoginComponent {
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         /* console.log('Token received:', response.token); // Log the token */
-        localStorage.setItem('token', response.token); // Store JWT token
+        localStorage.setItem('token', response.token); 
         /* console.log('Redirecting to home...'); */
         this.loginSuccess();
         this.router.navigate(['/home']);   // Redirect to home page after login
       },
       error: (error) => {
-        this.loginFailure();
-        this.errorMessage = 'Invalid email or password';
+        this.loginFailure(error.error.description);
         console.error('Login error:', error);
       },
     });
@@ -39,9 +37,8 @@ export class LoginComponent {
   loginSuccess() {
     this.toastr.success('Login successful!', 'Welcome');
   }
-      
 
-  loginFailure() {
-    this.toastr.error('Login failed. Please try again.', 'Error');
+  loginFailure(mssg : string) {
+    this.toastr.error(mssg, 'Error');
   }
 }

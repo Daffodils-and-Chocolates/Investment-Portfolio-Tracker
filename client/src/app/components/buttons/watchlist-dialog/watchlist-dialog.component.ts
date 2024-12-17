@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Stock } from '../../models/stock.interface';
+import { Stock } from '../../../models/stock.interface';
 
 @Component({
   selector: 'app-watchlist-dialog',

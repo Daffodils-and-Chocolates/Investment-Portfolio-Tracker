@@ -78,7 +78,6 @@ public class FinnhubWebSocketClient extends TextWebSocketHandler {
         }
     }
 
-
     public SseEmitter subscribe() {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         emitter.onCompletion(() -> emitters.remove(emitter));

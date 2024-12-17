@@ -3,18 +3,37 @@
 
   <!-- Group Selector -->
   <div class="d-flex justify-content-center mb-4">
-    <select
-      class="form-select w-50"
-      [(ngModel)]="selectedGroup"
-      (change)="loadStocksByGroup(selectedGroup)"
-    >
-      <option value="All">{{ userName }}'s List</option>
-      <option *ngFor="let group of groupNames" [value]="group">
-        {{ group }}
-      </option>
-    </select>
+    <div class="position-relative w-50">
+      <ng-container *ngIf="!visibleEdit || selectedGroup==='All'; else editGroupName">
+        <select
+          class="form-select"
+          [(ngModel)]="selectedGroup"
+          (change)="loadStocksByGroup(selectedGroup)"
+        >
+          <option value="All">{{ userName }}'s List</option>
+          <option *ngFor="let group of groupNames" [value]="group">
+            {{ group }}
+          </option>
+        </select>
+      </ng-container>
+  
+      <ng-template #editGroupName>
+        <input
+          class="form-control"
+          type="text"
+          [(ngModel)]="tempGroupName"
+          (ngModelChange)="onTempGroupNameChange($event)"
+          [placeholder]="'Enter group name'"
+          style="width: 100%;"
+          (keyup.enter)="onSavingGroupName(true)"
+        />
+      </ng-template>
+    </div>
+  
     <div>
-      <button class="btn-primary mx-5 p-2" (click)="toggleEdit()">Edit</button>
+      <button class="btn-primary mx-5 p-2 " (click)="toggleEdit()" *ngIf="!changingGroupName">Edit</button>
+      <button class="btn-primary mx-5 p-2 " (click)="onSavingGroupName(true)" *ngIf="changingGroupName">Save Group Name</button>
+      <button class="btn-primary mx-1 p-2 " (click)="onSavingGroupName(false)" *ngIf="changingGroupName">Cancel</button>
     </div>
   </div>
 
@@ -41,7 +60,6 @@
               <td [ngStyle]="{ color: stock.change < 0 ? 'red' : 'green' }">
                 {{ stock.price ? (stock.price | currency) : "Loading..." }}
               </td>
-              <!-- Show price or loading -->
               <td>
                 {{
                   stock.volume
@@ -58,20 +76,6 @@
       </div>
     </div>
   </div>
-
-  <!-- <div class="right-panel" [class.open]="isPanelOpen">
-    <div class="panel-header">
-      <h5>Stock Details</h5>
-      <button class="btn btn-close" (click)="closePanel()">x</button>
-    </div>
-    <div *ngIf="selectedStock">
-      <p><strong>Symbol:</strong> {{ selectedStock.symbol }}</p>
-      <p><strong>Price:</strong> {{ selectedStock.price | currency }}</p>
-      <p><strong>Volume:</strong> {{ selectedStock.volume | number }}</p>
-      <p><strong>Change:</strong> {{ selectedStock.change | number }}</p>
-      <p><strong>Percent Change:</strong> {{ selectedStock.percentChange | number }}%</p>
-    </div>
-  </div> -->
 
   <!-- Grouped Stocks -->
   <ng-template #groupedView>
@@ -109,6 +113,20 @@
       </table>
     </div>
   </ng-template>
+
+    <!-- <div class="right-panel" [class.open]="isPanelOpen">
+    <div class="panel-header">
+      <h5>Stock Details</h5>
+      <button class="btn btn-close" (click)="closePanel()">x</button>
+    </div>
+    <div *ngIf="selectedStock">
+      <p><strong>Symbol:</strong> {{ selectedStock.symbol }}</p>
+      <p><strong>Price:</strong> {{ selectedStock.price | currency }}</p>
+      <p><strong>Volume:</strong> {{ selectedStock.volume | number }}</p>
+      <p><strong>Change:</strong> {{ selectedStock.change | number }}</p>
+      <p><strong>Percent Change:</strong> {{ selectedStock.percentChange | number }}%</p>
+    </div>
+  </div> -->
 
   <!-- No Data Template -->
   <ng-template #noData>

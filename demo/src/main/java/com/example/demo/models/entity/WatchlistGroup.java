@@ -17,6 +17,10 @@ import java.time.LocalDateTime;
 @Table(name = "watchlist_groups")
 public class WatchlistGroup {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "group_id", unique = true)
+    private Long groupId;
+
     @NotNull
     @Column(name = "group_name", unique = true, nullable = false)
     private String groupName;

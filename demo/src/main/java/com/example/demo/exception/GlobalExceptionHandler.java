@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.ProblemDetail;
@@ -33,6 +35,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetail);
     }
 
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ProblemDetail> handleInvalidPasswordException(InvalidPasswordException ex) {
+        ProblemDetail errorDetail = createProblemDetail(
+                HttpStatus.BAD_REQUEST,  // Or another status, like FORBIDDEN
+                ex.getMessage(),
+                "The provided password does not match the existing password"
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetail);
+    }
+
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<ProblemDetail> handleSQLException(SQLException ex) {
         ProblemDetail errorDetail = createProblemDetail(
@@ -41,6 +53,25 @@ public class GlobalExceptionHandler {
                 "An unexpected database error prevented the operation from completing"
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetail);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ProblemDetail> handleValidationException(MethodArgumentNotValidException ex) {
+        StringBuilder detailBuilder = new StringBuilder("Validation failed for fields: ");
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            detailBuilder.append(error.getField())
+                    .append(" (")
+                    .append(error.getDefaultMessage())
+                    .append("), ");
+        }
+        String detail = detailBuilder.substring(0, detailBuilder.length() - 2);
+
+        ProblemDetail errorDetail = createProblemDetail(
+                HttpStatus.BAD_REQUEST,
+                "Validation Error",
+                detail
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetail);
     }
 
     //Security or login exceptions
